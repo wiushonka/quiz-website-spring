@@ -9,6 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 @Service
 @Transactional
 public class QuizCreationService {
@@ -32,15 +36,6 @@ public class QuizCreationService {
         Quiz quiz = quizRepo.findById(quizId).orElse(null);
         if(quiz == null) {
             throw new IllegalArgumentException("Quiz not found");
-        }
-        quiz.addQuestion(question);
-    }
-
-    public void addOldQuestionToQuiz(Long quizId, Long questionId) {
-        Quiz quiz = quizRepo.findById(quizId).orElse(null);
-        Question question = questionRepo.findById(questionId).orElse(null);
-        if(quiz == null || question == null) {
-            throw new IllegalArgumentException("Quiz or Question not found");
         }
         quiz.addQuestion(question);
     }

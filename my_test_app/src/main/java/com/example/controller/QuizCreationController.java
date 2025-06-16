@@ -33,8 +33,7 @@ public class QuizCreationController {
             @RequestParam("type")         String type,
             @RequestParam(value = "randomize",    defaultValue = "false") boolean randomize,
             @RequestParam(value = "quickResults", defaultValue = "false") boolean quickResults,
-            @RequestParam(value = "mulPages",      defaultValue = "false") boolean mulPages,
-            @RequestParam(value = "practiceMode",  defaultValue = "false") boolean practiceMode) {
+            @RequestParam(value = "mulPages",      defaultValue = "false") boolean mulPages) {
 
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -43,7 +42,7 @@ public class QuizCreationController {
 
         List<Question> questions = new ArrayList<>();
 
-        Quiz quiz = new Quiz(randomize, quickResults, mulPages, practiceMode, description, questions, user, type);
+        Quiz quiz = new Quiz(randomize, quickResults, mulPages, false, description, questions, user, type);
 
         Long quizId = quizCreationService.createQuiz(quiz);
 
@@ -70,12 +69,15 @@ public class QuizCreationController {
             case "TestQuestion":
                 q = new TestQuestion(question,List.of(answer.split(",")),category,maxPoints,posAnswers);
                 quizCreationService.addNewQuestionToQuiz(id, q);
+                break;
             case "ResponseQuestion":
                 q = new ResponseQuestion(question,answer,order,category,maxPoints);
                 quizCreationService.addNewQuestionToQuiz(id, q);
+                break;
             case "FillBlankQuestion":
                 q = new FillBlankQuestion(question,category,answer);
                 quizCreationService.addNewQuestionToQuiz(id, q);
+                break;
         }
         return "editQuiz";
     }
