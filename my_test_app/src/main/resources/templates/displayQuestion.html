@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="'Question ' + (${index} + 1) + ' of ' + ${quiz.description}">Question Page</title>
+</head>
+<body>
+
+
+
+
+<!-- everything that belongs in the POST must live inside this form -->
+<form th:action="@{/quiz/{id}/calculateResult(id=${quiz.id})}" method="post">
+
+    <p th:text="'Quiz ID: ' + ${quiz.id}"></p>
+
+    <!-- quiz header -->
+    <div th:replace="~{fragments :: quizHeader(
+        ${quiz.description},
+        ${quiz.type},
+        ${quiz.author != null ? quiz.author.username : 'Unknown'}
+    )}"></div>
+
+    <!-- question number -->
+    <p th:text="'Question ' + (${index} + 1)"></p>
+
+    <!-- your actual inputs -->
+    <div th:replace="~{fragments :: questionOptions(${question})}"></div>
+
+    <!-- navigation -->
+    <div th:replace="~{fragments :: pager(
+        ${quiz},
+        ${index},
+        ${hasPrevious},
+        ${hasNext}
+    )}"></div>
+
+    <!-- submit -->
+    <button type="submit">Submit Quiz</button>
+</form>
+
+</body>
+</html>

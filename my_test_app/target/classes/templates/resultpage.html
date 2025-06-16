@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Result</title>
+</head>
+<body>
+
+<h1>Quiz Result</h1>
+
+<div th:if="${quizResult}">
+  <p><strong>User:</strong> <span th:text="${quizResult.getUser().getUsername()}">Username</span></p>
+  <p><strong>Quiz:</strong> <span th:text="${quizResult.getQuiz().getDescription()}">Quiz Name</span></p>
+  <p><strong>Points:</strong> <span th:text="${quizResult.getPoints()}">0.0</span></p>
+  <p><strong>Time Taken:</strong> <span th:text="${quizResult.getTime()}">0</span> seconds</p>
+
+  <a th:href="@{/homepage}">
+    <button type="button">Return to Homepage</button>
+  </a>
+
+</div>
+
+<div th:if="${quizResult == null}">
+  <p>No result to display.</p>
+</div>
+
+</body>
+</html>

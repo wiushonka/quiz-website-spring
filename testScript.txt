@@ -1,0 +1,73 @@
+INSERT INTO users (id, username, password, admin) VALUES (1, 'admin', '1', false);
+
+-- Insert quiz
+INSERT INTO quiz
+(id, randomize, quick_results, mul_pages, practice_mode, description, type, author_id)
+VALUES
+(1, false, true, true, true, 'Sample Quiz on General Knowledge', 'Mixed', 1);
+
+-- Insert into question table (base questions)
+INSERT INTO question (id) VALUES
+(101), (102), (103), (104), (105),
+(106), (107), (108), (109), (110),
+(111), (112), (113), (114), (115),
+(116), (117), (118), (119), (120),
+(121), (122), (123), (124), (125),
+(126), (127), (128), (129), (130);
+
+-- Insert response questions (simple Q&A)
+INSERT INTO response_question
+(id, question, correct_answer, user_answer, answer_ordered, category, max_points)
+VALUES
+(101, 'What is the capital of France?', 'Paris', '', false, 'Geography', 10),
+(102, '2 + 2 = ?', '4', '', false, 'Math', 5),
+(103, 'What color is the sky?', 'Blue', '', false, 'Science', 5),
+(104, 'Who wrote Hamlet?', 'Shakespeare', '', false, 'Literature', 10),
+(105, 'H2O is the chemical formula for?', 'Water', '', false, 'Science', 5),
+(106, 'Capital of Germany?', 'Berlin', '', false, 'Geography', 10),
+(107, 'Fastest land animal?', 'Cheetah', '', false, 'Biology', 5),
+(108, 'What is 10 / 2?', '5', '', false, 'Math', 5),
+(109, 'Einstein’s first name?', 'Albert', '', false, 'Science', 5),
+(110, 'Opposite of hot?', 'Cold', '', false, 'English', 3);
+
+-- Insert test questions (multiple-choice)
+INSERT INTO test_question
+(id, question, correct_answers, user_answer, category, sav_answers, max_points)
+VALUES
+(111, 'Select the primary colors', 'Red,Blue,Yellow', '', 'Art', 'Red,Blue,Yellow,Green,Orange', 10),
+(112, 'Which are mammals?', 'Dog,Whale,Bat', '', 'Biology', 'Dog,Whale,Bat,Crocodile,Eagle', 10),
+(113, 'Which are programming languages?', 'Java,Python,C++', '', 'Computer Science', 'Java,Python,C++,HTML,SQL', 10),
+(114, 'Which are continents?', 'Asia,Europe,Africa', '', 'Geography', 'Asia,Europe,Africa,Antarctica,Greenland', 10),
+(115, 'Which planets are gas giants?', 'Jupiter,Saturn', '', 'Astronomy', 'Jupiter,Saturn,Mars,Earth,Venus', 10),
+(116, 'Which are vowels?', 'A,E,I,O,U', '', 'English', 'A,E,I,O,U,Y', 5),
+(117, 'Which are even numbers?', '2,4,6,8,10', '', 'Math', '1,2,3,4,5,6,7,8,9,10', 5),
+(118, 'Which animals can fly?', 'Bird,Bat,Butterfly', '', 'Biology', 'Bird,Bat,Butterfly,Elephant,Dog', 5),
+(119, 'Which are social media platforms?', 'Facebook,Twitter,Instagram', '', 'Tech', 'Facebook,Twitter,Instagram,LinkedIn,Reddit', 5),
+(120, 'Which are European countries?', 'France,Germany,Italy', '', 'Geography', 'France,Germany,Italy,Canada,Mexico', 10),
+(121, 'Which are oceans?', 'Atlantic,Pacific,Indian', '', 'Geography', 'Atlantic,Pacific,Indian,Arctic,Southern', 10),
+(122, 'Which elements are metals?', 'Iron,Gold,Silver', '', 'Chemistry', 'Iron,Gold,Silver,Oxygen,Hydrogen', 10),
+(123, 'Which are Shakespeare plays?', 'Hamlet,Macbeth,Othello', '', 'Literature', 'Hamlet,Macbeth,Othello,The Odyssey,The Iliad', 10),
+(124, 'Which devices are input?', 'Keyboard,Mouse,Scanner', '', 'Tech', 'Keyboard,Mouse,Scanner,Monitor,Printer', 10),
+(125, 'Which are fruits?', 'Apple,Banana,Mango', '', 'Biology', 'Apple,Banana,Mango,Carrot,Potato', 5);
+
+-- Insert FillBlankQuestions
+INSERT INTO fill_blank_question (id, category, correct_answer, question, user_answer)
+VALUES
+(126, 'Geography', 'Paris', 'The capital of France is (__).', NULL),
+(127, 'Science', '100', 'Water boils at (__) degrees Celsius.', NULL),
+(128, 'Computer Science', 'Python', 'The programming language named after a comedy group is (__).', NULL),
+(129, 'Chemistry', 'O', 'The chemical symbol for oxygen is (__).', NULL),
+(130, 'Astronomy', 'Jupiter', 'The largest planet in our solar system is (__).', NULL);
+
+
+-- Link questions to quiz
+INSERT INTO quiz_questions (quiz_id, questions_id) VALUES
+(1, 101), (1, 102), (1, 103), (1, 104), (1, 105),
+(1, 106), (1, 107), (1, 108), (1, 109), (1, 110),
+(1, 111), (1, 112), (1, 113), (1, 114), (1, 115),
+(1, 116), (1, 117), (1, 118), (1, 119), (1, 120),
+(1, 121), (1, 122), (1, 123), (1, 124), (1, 125),
+(1, 126), (1, 127), (1, 128), (1, 129), (1, 130);
+
+
+select * from quiz

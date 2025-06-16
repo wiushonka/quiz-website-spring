@@ -1,0 +1,57 @@
+package com.example.model.users.admin;
+
+import com.example.model.users.User;
+import jakarta.persistence.*;
+
+@Entity
+public class Announcement {
+
+    // TODO : ====== SOME EXTRA CONTENT CAN BE ADDED, FOR EXAMPLE IMAGES SUPPORT OR SOMTH ======
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    Long id;
+
+    private String title;
+
+    private String content;
+
+    @ManyToOne
+    private User author;
+
+    public Announcement() {}
+
+    public Announcement(User author, String title, String content) {
+        this.author = author;
+        this.title = title;
+        this.content = content;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getAuthorName() {
+        if (author != null) {
+            return author.getUsername();
+        }else {
+            return "This user got Account deleted , or got banned";
+        }
+    }
+}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Homepage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .announcements {
+            width: 40%;
+            margin-left: 30%;
+        }
+
+        .quizzes {
+            width: 30%;
+            padding-left: 2rem;
+        }
+
+        .announcement, .quiz {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .quiz:hover {
+            background-color: #eef;
+            cursor: pointer;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .author {
+            color: #555;
+            margin-top: 0.2rem;
+            font-style: italic;
+        }
+
+        .content, .description {
+            margin-top: 0.5rem;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        /* Floating button */
+        .floating-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.4rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+        }
+
+        .floating-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Announcements Section -->
+    <div class="announcements">
+        <h1>Announcements</h1>
+
+        <div th:if="${#lists.isEmpty(announcements)}">
+            No announcements available.
+        </div>
+
+        <div th:each="ann : ${announcements}" class="announcement">
+            <div class="title" th:text="${ann.title}">Announcement Title</div>
+            <div class="author" th:text="'By: ' + ${ann.authorName}">By: Author Name</div>
+            <div class="content" th:text="${ann.content}">Announcement content here</div>
+        </div>
+    </div>
+
+    <!-- Quizzes Section -->
+    <div class="quizzes">
+        <h1>Popular Quizzes</h1>
+
+        <div th:if="${#lists.isEmpty(popularQuizs)}">
+            No quizzes available.
+        </div>
+
+        <a th:each="q : ${popularQuizs}"
+           th:href="@{/quiz/startQuiz/{id}(id=${q.id})}"
+           class="quiz">
+            <div class="title" th:text="${q.getType()}">Quiz Title</div>
+            <div class="author" th:text="'By: ' + ${q.getAuthor().getUsername()}">By: Author Name</div>
+            <div class="description" th:text="${q.getDescription()}">Quiz description here</div>
+        </a>
+    </div>
+
+</div>
+
+<!-- Floating Create Quiz Button -->
+<form th:action="@{/createQuiz}" method="get">
+    <button type="submit" class="floating-button">Create New Quiz</button>
+</form>
+
+</body>
+</html>
