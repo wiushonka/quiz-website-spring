@@ -1,26 +1,46 @@
 package com.example.controller;
 
+import com.example.model.users.FriendRequest;
 import com.example.model.users.User;
+import com.example.service.FriendService;
 import com.example.service.HomepageService;
+import com.example.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Controller
 public class HomepageController {
 
     private final HomepageService homepageService;
+    private final FriendService friendService;
 
-    public HomepageController(HomepageService homepageService) {
+    public HomepageController(HomepageService homepageService, FriendService friendService) {
         this.homepageService = homepageService;
+        this.friendService = friendService;
     }
 
     @RequestMapping("/homepage")
-    public String displayHomepage(Model model) {
+    public String displayHomepage(Model model, HttpSession session) {
         model.addAttribute("announcements",homepageService.getAnnouncements());
         model.addAttribute("popularQuizs",homepageService.popularQuizs());
+        User user = (User) session.getAttribute("user");
+
+        if(user == null) {
+            return "login";
+        }
+        
+        model.addAttribute("user",user);
+
+        List<FriendRequest> reqs = friendService.getFriendRequests(user.getId());
+        model.addAttribute("friendRequests",reqs);
+        List<User> friends = friendService.getFriendsList(user.getId());
+        model.addAttribute("friends",friends);
+
         return "homepage";
     }
 

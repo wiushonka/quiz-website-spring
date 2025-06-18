@@ -58,11 +58,17 @@ public class QuizController {
     }
 
     @RequestMapping("/quiz/startQuiz/{id}")
-    public String startQuiz(@PathVariable Long id, Model model, HttpSession session) {
+    public String startQuiz(@PathVariable Long id,
+                            Model model,
+                            HttpSession session,
+                            @RequestParam(value = "newFriendRequestSent", required = false) Boolean sent) {
         model.addAttribute("quiz", quizService.getQuizById(id));
         if((User)session.getAttribute("user") == null) {
             return "redirect:/login";
         }
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("user",user);
+        model.addAttribute("newFriendRequestSent",sent);
         return "quizStartPage";
     }
 

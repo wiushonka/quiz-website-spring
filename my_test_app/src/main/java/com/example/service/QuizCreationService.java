@@ -19,13 +19,9 @@ public class QuizCreationService {
 
     private final QuizRepo quizRepo;
 
-    private final QuestionRepo questionRepo;
-
     public QuizCreationService(QuizRepo quizRepo, QuestionRepo questionRepo) {
         this.quizRepo = quizRepo;
-        this.questionRepo = questionRepo;
     }
-
 
     public Long createQuiz(Quiz quiz) {
         Quiz saved = quizRepo.save(quiz);

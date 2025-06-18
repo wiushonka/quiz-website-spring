@@ -3,6 +3,8 @@ package com.example.model.users;
 import com.example.model.quizes.Quiz;
 import com.example.model.quizes.QuizResult;
 import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +62,14 @@ public class User {
         this.admin = false;
     }
 
+    // todo: remove this old method, was only for testing
     public FriendRequest sendFriendRequest(User receiver) {
+        for (FriendRequest fr : this.sentRequests) {
+            if (fr.getReceiver().equals(receiver)) {
+                return null;
+            }
+        }
+
         FriendRequest fr = new FriendRequest(this, receiver);
         this.sentRequests.add(fr);
         receiver.pendingRequests.add(fr);
@@ -72,6 +81,14 @@ public class User {
             request.setResult(true);
             this.friends.add(request.getSender());
             request.getSender().friends.add(this);
+            this.pendingRequests.remove(request);
+            request.getSender().sentRequests.remove(request);
+        }
+    }
+
+    public void rejectFriendRequest(FriendRequest request) {
+        if (this.pendingRequests.contains(request)) {
+            request.setResult(false);
             this.pendingRequests.remove(request);
             request.getSender().sentRequests.remove(request);
         }
@@ -119,7 +136,7 @@ public class User {
 
     public List<FriendRequest> getPendingRequests() { return pendingRequests; }
 
-    public void sendMessage(String message, Chat chat) { chat.addMessage(this.username + ":>" + "\n" + message); }
+    public void sendMessage(String message, @NotNull Chat chat) { chat.addMessage(this.username + ":>" + "\n" + message); }
 
     public List<QuizResult> getUserHistory() { return userHistory; }
 

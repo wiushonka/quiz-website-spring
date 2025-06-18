@@ -41,4 +41,8 @@ public class UserService {
     public User getUser(@NotNull String username) {
         return userRepo.findByUsername(username);
     }
+
+    public User getUserById(@NotNull Long id) {
+        return userRepo.findById(id).orElse(null);
+    }
 }

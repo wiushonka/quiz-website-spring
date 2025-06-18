@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Start Quiz</title>
   <style>
     body {
@@ -29,7 +29,7 @@
 
     .description {
       color: #444;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
 
     .btn {
@@ -51,8 +51,32 @@
       color: white;
     }
 
+    .friend-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
     .btn:hover {
       opacity: 0.9;
+    }
+
+    .author-info {
+      margin-top: 2rem;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+    }
+
+    .status-message {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    .status-success {
+      color: green;
+    }
+
+    .status-warning {
+      color: orange;
     }
   </style>
 </head>
@@ -69,6 +93,36 @@
   <form th:action="@{/homepage}" method="get">
     <button type="submit" class="btn back-btn">Back to Homepage</button>
   </form>
+
+  <div class="author-info">
+    <h3>Author Info</h3>
+    <p th:text="'Username: ' + ${quiz.author.username}">Author Username</p>
+
+    <div th:if="${user.id != quiz.author.id}">
+
+      <!-- Case: No friend request has been sent yet -->
+      <form th:if="${newFriendRequestSent == null}" th:action="@{/friend/send}" method="post">
+        <input type="hidden" name="receiverId" th:value="${quiz.author.id}" />
+        <input type="hidden" name="quizId" th:value="${quiz.id}" />
+        <button type="submit" class="btn friend-btn">Send Friend Request</button>
+      </form>
+
+      <!-- Case: Friend request just sent successfully -->
+      <p th:if="${newFriendRequestSent == true}" class="status-message status-success">
+        Friend request sent!
+      </p>
+
+      <!-- Case: Already friends or request already sent -->
+      <p th:if="${newFriendRequestSent == false}" class="status-message status-warning">
+        You are already friends or request was already sent.
+      </p>
+
+    </div>
+
+    <p th:if="${user.id == quiz.author.id}" style="color: gray;">
+      You are the author of this quiz.
+    </p>
+  </div>
 </div>
 
 </body>
