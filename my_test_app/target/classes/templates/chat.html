@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat</title>
+  <style>
+    #chat-box {
+      height: 400px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      padding: 10px;
+      display: flex;
+      flex-direction: column-reverse;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin-bottom: 10px;
+    }
+    #message-form {
+      display: flex;
+      gap: 5px;
+    }
+    #message-input {
+      flex-grow: 1;
+      padding: 5px;
+      font-size: 1rem;
+    }
+    #send-button {
+      padding: 5px 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div id="chat-container">
+  <div id="chat-box">
+    <!-- Existing messages -->
+    <div th:each="message : ${messages}" class="message">
+      <span th:text="${#temporals.format(message.date, 'HH:mm')}">…</span>
+      <span th:text="${message.text}"></span>
+    </div>
+  </div>
+
+  <!-- Send message form -->
+  <form id="message-form" th:action="@{/chat/{chatId}/send(chatId=${chatId})}" method="post">
+    <label for="message-input" class="sr-only">Message:</label>
+    <input type="text" id="message-input" name="text" placeholder="Type your message..." required />
+    <button type="submit" id="send-button">Send</button>
+  </form>
+</div>
+
+<script>
+  // Pagination scroll loader (optional enhancement)
+  let page = 1;
+  const chatBox = document.getElementById('chat-box');
+  const chatId = /*[[${chatId}]]*/ '0';
+
+  chatBox.addEventListener('scroll', () => {
+    if (chatBox.scrollTop === (chatBox.scrollHeight - chatBox.clientHeight)) {
+      fetch(`/chat/${chatId}/messages?page=${page}&size=20`)
+              .then(res => res.json())
+              .then(messages => {
+                if (messages.length === 0) return;
+                messages.reverse().forEach(msg => {
+                  const div = document.createElement('div');
+                  div.classList.add('message');
+                  div.innerHTML = `<strong>${new Date(msg.date).toLocaleTimeString()}</strong>: ${msg.text}`;
+                  chatBox.appendChild(div);
+                });
+                page++;
+              });
+    }
+  });
+</script>
+</body>
+</html>

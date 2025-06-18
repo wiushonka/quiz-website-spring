@@ -2,6 +2,7 @@ package com.example.model.users;
 
 import com.example.model.quizes.Quiz;
 import com.example.model.quizes.QuizResult;
+import com.example.model.users.chat.Chat;
 import jakarta.persistence.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +27,7 @@ public class User {
     @ManyToMany
     private List<User> friends = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private List<Chat> chats = new ArrayList<>();
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -136,7 +137,8 @@ public class User {
 
     public List<FriendRequest> getPendingRequests() { return pendingRequests; }
 
-    public void sendMessage(String message, @NotNull Chat chat) { chat.addMessage(this.username + ":>" + "\n" + message); }
+    // TODO : THIS DOES NOT BELONG HERE
+    // public void sendMessage(String message, @NotNull Chat chat) { chat.addMessage(this.username + ":>" + "\n" + message); }
 
     public List<QuizResult> getUserHistory() { return userHistory; }
 

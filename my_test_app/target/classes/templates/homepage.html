@@ -212,8 +212,11 @@
     <button id="toggle-friends">Friends</button>
     <div id="friends-list" th:if="${friends}">
         <ul>
-            <li th:each="f : ${friends}" th:text="${f.username}">Friend Name</li>
+            <li th:each="f : ${friends}">
+                <a th:href="@{/chatWithOneUser(clickedUserId=${f.id})}" th:text="${f.username}">Friend Name</a>
+            </li>
         </ul>
+
     </div>
 </div>
 

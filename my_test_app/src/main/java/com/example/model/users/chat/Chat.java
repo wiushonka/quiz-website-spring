@@ -1,6 +1,8 @@
-package com.example.model.users;
+package com.example.model.users.chat;
 
+import com.example.model.users.User;
 import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,21 +15,20 @@ public class Chat {
     private Long id;
 
     @ManyToMany
-    private List<User> users = new ArrayList<>();
+    private List<User> users;
 
-    @ElementCollection
-    private List<String> messages = new ArrayList<>();
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Message> messages;
 
-    public Chat() {
-        this.users = new ArrayList<>();
-        this.messages = new ArrayList<>();
-    }
 
-    public Chat(List<User> users) {
+    protected Chat() {}
+
+    public Chat(@NotNull List<User> users) {
         this.users = users;
         for (User user : users) {
             user.getChats().add(this);
         }
+        messages = new ArrayList<>();
     }
 
     public Long getId() { return id; }
@@ -42,11 +43,11 @@ public class Chat {
         user.getChats().remove(this);
     }
 
-    public void addMessage(String message) {
+    public void addMessage(Message message) {
         messages.add(message);
     }
 
-    public List<String> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 

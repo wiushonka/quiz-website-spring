@@ -2,10 +2,14 @@ package com.example.service;
 
 
 import com.example.model.users.User;
+import com.example.model.users.chat.Chat;
+import com.example.repos.ChatRepo;
 import com.example.repos.UserRepo;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -13,7 +17,10 @@ public class UserService {
 
     private final UserRepo userRepo;
 
-    public UserService(UserRepo userRepo) {
+    private final ChatRepo chatRepo;
+
+    public UserService(UserRepo userRepo, ChatRepo chatRepo) {
+        this.chatRepo = chatRepo;
         this.userRepo = userRepo;
     }
 
@@ -44,5 +51,19 @@ public class UserService {
 
     public User getUserById(@NotNull Long id) {
         return userRepo.findById(id).orElse(null);
+    }
+
+    public void addUserToChat(@NotNull Long chatId, @NotNull Long userId) {
+        User user = userRepo.findById(userId).orElse(null);
+        if(user == null) throw new RuntimeException("User not found");
+        Chat chat = chatRepo.findById(chatId).orElse(null);
+        if(chat == null) throw new RuntimeException("Chat not found");
+        user.getChats().add(chat);
+    }
+
+    public List<Chat> getUserChats(@NotNull Long userId) {
+        User user = userRepo.findById(userId).orElse(null);
+        if(user == null) throw new RuntimeException("User not found");
+        return user.getChats();
     }
 }
