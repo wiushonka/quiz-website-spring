@@ -5,6 +5,7 @@ import com.example.model.users.User;
 import jakarta.persistence.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,8 @@ public class Quiz {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Question> questions = new ArrayList<>();
 
+    private LocalDateTime creationDate;
+
     public Quiz() {}
 
     public Quiz(boolean randomize, boolean quickResults, boolean mulPages, boolean practiceMode, String description,
@@ -48,6 +51,15 @@ public class Quiz {
         this.questions = questions;
         this.author = author;
         this.type = type;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.creationDate = LocalDateTime.now();
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
     public String getDescription() {

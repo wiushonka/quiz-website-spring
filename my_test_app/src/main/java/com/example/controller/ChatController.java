@@ -59,6 +59,4 @@ public class ChatController {
         Long chatId = chatService.startChat(users);
         return "redirect:/" + chatId;
     }
-
-
 }

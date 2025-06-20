@@ -7,6 +7,7 @@ import com.example.repos.UserRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -52,9 +53,19 @@ public class FriendService {
 
     public void acceptFriendRequest(Long requestId) {
         FriendRequest fr = friendRequestRepo.findById(requestId).orElse(null);
-        if(fr == null) throw new RuntimeException("searching friend for non existing request");
+        if (fr == null) throw new RuntimeException("Searching friend for non-existing request");
+
         User receiver = fr.getReceiver();
-        receiver.acceptFriendRequest(fr);
+
+        try {
+            receiver.acceptFriendRequest(fr);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("inconsistent")) {
+                System.err.println("Friendship inconsistency detected: " + e.getMessage());
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void rejectFriendRequest(Long requestId) {
@@ -68,5 +79,14 @@ public class FriendService {
         User user = userRepo.findById(userId).orElse(null);
         if(user == null) throw new RuntimeException("searching friends for non existing user");
         return user.getFriends();
+    }
+
+    public void endFriendship(Long remover, Long removed) {
+        User removerUser = userRepo.findById(remover).orElse(null);
+        User removedUser = userRepo.findById(removed).orElse(null);
+        if(removedUser == null || removerUser == null) throw new RuntimeException("User not found");
+
+        removerUser.getFriends().remove(removedUser);
+        removedUser.getFriends().remove(removerUser);
     }
 }

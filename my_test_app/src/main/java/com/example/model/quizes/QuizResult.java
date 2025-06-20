@@ -3,6 +3,8 @@ package com.example.model.quizes;
 import com.example.model.users.User;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class QuizResult {
     @Id
@@ -18,6 +20,8 @@ public class QuizResult {
     @ManyToOne()
     private Quiz quiz;
 
+    private LocalDateTime resultDate;
+
     public QuizResult() {}
 
     public QuizResult(Long time, double points, Quiz quiz, User user) {
@@ -25,6 +29,15 @@ public class QuizResult {
         this.points = points;
         this.quiz = quiz;
         this.user = user;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        resultDate = LocalDateTime.now();
+    }
+
+    public LocalDateTime getResultDate() {
+        return resultDate;
     }
 
     public Long getId() {

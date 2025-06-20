@@ -43,17 +43,17 @@ class AdministratorTest {
         Quiz q1 = new Quiz();
         quizRepo.save(q1);
 
-        QuizResult jr1 = new QuizResult(1,1,q1,john);
+        QuizResult jr1 = new QuizResult(1L,1,q1,john);
         q1.addResult(jr1);
-        QuizResult jr2 = new QuizResult(1,1,q1,john);
+        QuizResult jr2 = new QuizResult(1L,1,q1,john);
         q1.addResult(jr2);
-        QuizResult ar1 = new QuizResult(1,1,q1,alice);
+        QuizResult ar1 = new QuizResult(1L,1,q1,alice);
         q1.addResult(ar1);
-        QuizResult br1 = new QuizResult(1,1,q1,bob);
+        QuizResult br1 = new QuizResult(1L,1,q1,bob);
         q1.addResult(br1);
-        QuizResult ar2 = new QuizResult(1,1,q1,alice);
+        QuizResult ar2 = new QuizResult(1L,1,q1,alice);
         q1.addResult(ar2);
-        QuizResult br2 = new QuizResult(1,1,q1,bob);
+        QuizResult br2 = new QuizResult(1L,1,q1,bob);
         q1.addResult(br2);
 
         AdminService service = new AdminService(userRepo,quizRepo,announcementRepo);
@@ -88,9 +88,9 @@ class AdministratorTest {
         }
         System.out.println("======================================================================= \n");
 
-        QuizResult jr11 = new QuizResult(1,1,q1,john);
-        QuizResult jr12 = new QuizResult(1,1,q1,john);
-        QuizResult ar11 = new QuizResult(1,1,q1,alice);
+        QuizResult jr11 = new QuizResult(1L,1,q1,john);
+        QuizResult jr12 = new QuizResult(1L,1,q1,john);
+        QuizResult ar11 = new QuizResult(1L,1,q1,alice);
 
         q1.addResult(jr11);
         q1.addResult(jr12);
@@ -112,9 +112,9 @@ class AdministratorTest {
         }
         System.out.println("======================================================================= \n");
 
-        QuizResult jr21 = new QuizResult(1,1,q1,john);
-        QuizResult jr22 = new QuizResult(1,1,q1,john);
-        QuizResult ar21 = new QuizResult(1,1,q1,alice);
+        QuizResult jr21 = new QuizResult(1L,1,q1,john);
+        QuizResult jr22 = new QuizResult(1L,1,q1,john);
+        QuizResult ar21 = new QuizResult(1L,1,q1,alice);
 
         q1.addResult(jr21);
         q1.addResult(jr22);

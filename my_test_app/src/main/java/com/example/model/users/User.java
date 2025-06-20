@@ -25,6 +25,14 @@ public class User {
     private String password;
 
     @ManyToMany
+    @JoinTable(
+            name = "user_friends",
+            joinColumns =  @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id"),
+            uniqueConstraints = @UniqueConstraint(
+                    columnNames = { "user_id", "friend_id" }
+            )
+    )
     private List<User> friends = new ArrayList<>();
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
@@ -35,11 +43,11 @@ public class User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FriendRequest> pendingRequests = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+                                                                            // TODO : can prob change this
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<QuizResult> userHistory;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Challenge> challenges;
 
     @Column(nullable = false)
@@ -63,28 +71,32 @@ public class User {
         this.admin = false;
     }
 
-    // todo: remove this old method, was only for testing
-    public FriendRequest sendFriendRequest(User receiver) {
-        for (FriendRequest fr : this.sentRequests) {
-            if (fr.getReceiver().equals(receiver)) {
-                return null;
-            }
+    public void acceptFriendRequest(FriendRequest request) {
+        if (!this.pendingRequests.contains(request)) return;
+
+        User sender = request.getSender();
+
+        if (this.friends.contains(sender) && sender.getFriends().contains(this)) {
+            pendingRequests.remove(request);
+            return;
         }
 
-        FriendRequest fr = new FriendRequest(this, receiver);
-        this.sentRequests.add(fr);
-        receiver.pendingRequests.add(fr);
-        return fr;
-    }
+        if (this.friends.contains(sender) || sender.getFriends().contains(this)) {
+            throw new RuntimeException("Friendship data is inconsistent between users.");
+        }
 
-    public void acceptFriendRequest(FriendRequest request) {
-        if (this.pendingRequests.contains(request)) {
-            request.setResult(true);
+        request.setResult(true);
+
+        if(this.id > sender.getId()) {
+            request.getSender().friends.add(this);
+            this.friends.add(request.getSender());
+        }else {
             this.friends.add(request.getSender());
             request.getSender().friends.add(this);
-            this.pendingRequests.remove(request);
-            request.getSender().sentRequests.remove(request);
         }
+
+        this.pendingRequests.remove(request);
+        request.getSender().sentRequests.remove(request);
     }
 
     public void rejectFriendRequest(FriendRequest request) {
@@ -93,11 +105,6 @@ public class User {
             this.pendingRequests.remove(request);
             request.getSender().sentRequests.remove(request);
         }
-    }
-
-    public void removeFriend(User friend) {
-        this.friends.remove(friend);
-        friend.friends.remove(this);
     }
 
     public Long getId() { return id; }
@@ -136,9 +143,6 @@ public class User {
     }
 
     public List<FriendRequest> getPendingRequests() { return pendingRequests; }
-
-    // TODO : THIS DOES NOT BELONG HERE
-    // public void sendMessage(String message, @NotNull Chat chat) { chat.addMessage(this.username + ":>" + "\n" + message); }
 
     public List<QuizResult> getUserHistory() { return userHistory; }
 

@@ -101,7 +101,15 @@ public class QuizController {
         double score = quizService.calculateScore(quiz);
         QuizResult result = new QuizResult(elapsedTime, score, quiz, user);
 
+        quizService.addNewResult(elapsedTime,score,quiz.getId(),user.getId());
+
         model.addAttribute("quizResult", result);
         return "resultpage";
+    }
+
+    @GetMapping("/allQuizzes")
+    public String displayAllQuizzes(Model model) {
+        model.addAttribute("quizzs", quizService.getAllQuizzs());
+        return "allQuizzes";
     }
 }
