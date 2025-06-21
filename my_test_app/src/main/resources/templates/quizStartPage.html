@@ -7,20 +7,38 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
-      padding: 2rem;
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       height: 100vh;
     }
 
-    .container {
+    .layout {
+      display: flex;
+      width: 90%;
+      max-width: 1000px;
+      margin-top: 2rem;
+      gap: 2rem;
+    }
+
+    .left-panel {
+      width: 40%;
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      height: fit-content;
+    }
+
+    .right-panel {
+      width: 60%;
       background-color: #fff;
       padding: 2rem;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       text-align: center;
-      width: 400px;
     }
 
     h1 {
@@ -38,7 +56,7 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin: 0.5rem;
+      margin: 0.5rem 0;
     }
 
     .start-btn {
@@ -56,14 +74,13 @@
       color: white;
     }
 
-    .btn:hover {
-      opacity: 0.9;
+    .small-btn {
+      padding: 0.3rem 0.7rem;
+      font-size: 0.8rem;
     }
 
-    .author-info {
-      margin-top: 2rem;
-      border-top: 1px solid #ccc;
-      padding-top: 1rem;
+    .btn:hover {
+      opacity: 0.9;
     }
 
     .status-message {
@@ -78,50 +95,115 @@
     .status-warning {
       color: orange;
     }
+
+    .friend-scroll {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 0.5rem;
+      background-color: #f9f9f9;
+    }
+
+    ul.friend-ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    ul.friend-ul li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .friend-name {
+      margin-right: 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+    }
+
+    .author-info {
+      margin-top: 2rem;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+    }
+
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1 th:text="${quiz.description}">Quiz Title</h1>
-  <p class="description" th:text="'Type: ' + ${quiz.type}">Quiz type</p>
-
-  <form th:action="@{/quiz/{id}(id=${quiz.id})}" method="get">
-    <button type="submit" class="btn start-btn">Start Quiz</button>
-  </form>
-
-  <form th:action="@{/homepage}" method="get">
-    <button type="submit" class="btn back-btn">Back to Homepage</button>
-  </form>
-
-  <div class="author-info">
-    <h3>Author Info</h3>
-    <p th:text="'Username: ' + ${quiz.author.username}">Author Username</p>
-
-    <div th:if="${user.id != quiz.author.id}">
-
-      <!-- Case: No friend request has been sent yet -->
-      <form th:if="${newFriendRequestSent == null}" th:action="@{/friend/send}" method="post">
-        <input type="hidden" name="receiverId" th:value="${quiz.author.id}" />
-        <input type="hidden" name="quizId" th:value="${quiz.id}" />
-        <button type="submit" class="btn friend-btn">Send Friend Request</button>
-      </form>
-
-      <!-- Case: Friend request just sent successfully -->
-      <p th:if="${newFriendRequestSent == true}" class="status-message status-success">
-        Friend request sent!
-      </p>
-
-      <!-- Case: Already friends or request already sent -->
-      <p th:if="${newFriendRequestSent == false}" class="status-message status-warning">
-        You are already friends or request was already sent.
-      </p>
-
+<div class="layout">
+  <!-- Left Panel -->
+  <div class="left-panel">
+    <h3>Your Friends</h3>
+    <div th:if="${#lists.isEmpty(friends)}">
+      <p>You have no friends yet.</p>
+    </div>
+    <div th:unless="${#lists.isEmpty(friends)}" class="friend-scroll">
+      <ul class="friend-ul">
+        <li th:each="friend : ${friends}">
+          <span class="friend-name" th:text="${friend.username}">Friend</span>
+          <form th:action="@{/sendChallenge}" method="post" style="margin: 0;">
+            <input type="hidden" name="recieverId" th:value="${friend.id}" />
+            <input type="hidden" name="quizId" th:value="${quiz.id}" />
+            <button type="submit" class="btn friend-btn small-btn">Challenge</button>
+          </form>
+        </li>
+      </ul>
     </div>
 
-    <p th:if="${user.id == quiz.author.id}" style="color: gray;">
-      You are the author of this quiz.
-    </p>
+    <!-- NEW PART -->
+    <div th:if="${dto != null}" class="challenge-info" style="margin-top: 2rem;">
+      <h3>Challenger's Best Score</h3>
+      <p><strong>Time:</strong> <span th:text="${dto.quizResult.time}">0</span> seconds</p>
+      <p><strong>Points:</strong> <span th:text="${dto.quizResult.points}">0.0</span></p>
+      <p><strong>Date:</strong> <span th:text="${dto.quizResult.resultDate}">N/A</span></p>
+    </div>
+
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <h1 th:text="${quiz.description}">Quiz Title</h1>
+    <p class="description" th:text="'Type: ' + ${quiz.type}">Quiz type</p>
+
+    <form th:action="@{/quiz/{id}(id=${quiz.id})}" method="get">
+      <button type="submit" class="btn start-btn">Start Quiz</button>
+    </form>
+
+    <form th:action="@{/homepage}" method="get">
+      <button type="submit" class="btn back-btn">Back to Homepage</button>
+    </form>
+
+    <div class="author-info">
+      <h3>Author Info</h3>
+      <p th:text="'Username: ' + ${quiz.author.username}">Author Username</p>
+
+      <div th:if="${user.id != quiz.author.id}">
+        <form th:if="${newFriendRequestSent == null}" th:action="@{/friend/send}" method="post">
+          <input type="hidden" name="receiverId" th:value="${quiz.author.id}" />
+          <input type="hidden" name="quizId" th:value="${quiz.id}" />
+          <button type="submit" class="btn friend-btn">Send Friend Request</button>
+        </form>
+
+        <p th:if="${newFriendRequestSent == true}" class="status-message status-success">
+          Friend request sent!
+        </p>
+
+        <p th:if="${newFriendRequestSent == false}" class="status-message status-warning">
+          You are already friends or request was already sent.
+        </p>
+      </div>
+
+      <p th:if="${user.id == quiz.author.id}" style="color: gray;">
+        You are the author of this quiz.
+      </p>
+    </div>
   </div>
 </div>
 

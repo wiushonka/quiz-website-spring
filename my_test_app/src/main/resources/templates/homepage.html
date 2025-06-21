@@ -175,21 +175,14 @@
             <div th:each="chal : ${recentChallenges}" class="quiz">
                 <div class="title" th:text="'From: ' + ${chal.sender.username}">Sender Name</div>
                 <div class="description">
-
-
-
                     <form th:action="@{/challenge/accept}" method="post" style="display:inline;">
-                        <input type="hidden" name="requestId" th:value="${chal.id}" />
+                        <input type="hidden" name="chalId" th:value="${chal.id}" />
                         <button type="submit">Accept</button>
                     </form>
                     <form th:action="@{/challenge/reject}" method="post" style="display:inline;">
-                        <input type="hidden" name="requestId" th:value="${chal.id}" />
+                        <input type="hidden" name="chalId" th:value="${chal.id}" />
                         <button type="submit">Reject</button>
                     </form>
-
-
-
-
                 </div>
             </div>
         </div>

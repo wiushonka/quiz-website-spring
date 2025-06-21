@@ -66,4 +66,10 @@ public class UserService {
         if(user == null) throw new RuntimeException("User not found");
         return user.getChats();
     }
+
+    public List<User> getUserFriends(@NotNull Long userId) {
+        User user = userRepo.findById(userId).orElse(null);
+        if(user == null) throw new RuntimeException("User not found");
+        return user.getFriends();
+    }
 }

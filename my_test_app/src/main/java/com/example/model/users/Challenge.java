@@ -3,6 +3,7 @@ package com.example.model.users;
 import com.example.model.quizes.Quiz;
 import com.example.model.quizes.QuizResult;
 import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -15,22 +16,22 @@ public class Challenge {
     @OneToOne
     private QuizResult senderBestScore;
 
-    @OneToOne
+    @ManyToOne
     private User sender;
 
-    @OneToOne
+    @ManyToOne
     private User receiver;
 
-    @OneToOne
+    @ManyToOne(optional = false)
     private Quiz quiz;
 
     public Challenge() {}
 
-    public Challenge(User sender, User receiver, Quiz quiz) {
+    public Challenge(@NotNull User sender, User receiver, Quiz quiz, QuizResult senderBestScore) {
         this.sender = sender;
         this.receiver = receiver;
         this.quiz = quiz;
-        this.senderBestScore = sender.getBestScore(quiz);
+        this.senderBestScore = senderBestScore;
     }
 
     public Long getId() {

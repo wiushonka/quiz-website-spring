@@ -7,7 +7,6 @@ import com.example.repos.UserRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -52,27 +51,52 @@ public class FriendService {
     }
 
     public void acceptFriendRequest(Long requestId) {
-        FriendRequest fr = friendRequestRepo.findById(requestId).orElse(null);
-        if (fr == null) throw new RuntimeException("Searching friend for non-existing request");
+        FriendRequest fr = friendRequestRepo.findWithLock(requestId)
+                .orElseThrow(() -> new RuntimeException("Friend request not found"));
+        Long senderId = fr.getSender().getId();
+        User sender = userRepo.findWithLock(senderId).orElseThrow(() -> new RuntimeException("user not found"));
+        Long receiverId = fr.getReceiver().getId();
+        User receiver = userRepo.findWithLock(receiverId).orElseThrow(() -> new RuntimeException("user not found"));
 
-        User receiver = fr.getReceiver();
+        if (sender == null || receiver == null)
+            throw new RuntimeException("Sender or receiver is null");
 
-        try {
-            receiver.acceptFriendRequest(fr);
-        } catch (RuntimeException e) {
-            if (e.getMessage().contains("inconsistent")) {
-                System.err.println("Friendship inconsistency detected: " + e.getMessage());
-            } else {
-                throw e;
-            }
+        if (!receiver.getPendingRequests().contains(fr)) return;
+
+        if (receiver.getFriends().contains(sender) && sender.getFriends().contains(receiver)) {
+            receiver.getPendingRequests().remove(fr);
+            return;
         }
+
+        if (receiver.getFriends().contains(sender) || sender.getFriends().contains(receiver)) {
+            throw new RuntimeException("Friendship data is inconsistent between users.");
+        }
+
+        fr.setResult(true);
+        sender.getFriends().add(receiver);
+        receiver.getFriends().add(sender);
+
+        receiver.getPendingRequests().remove(fr);
+        sender.getSentRequests().remove(fr);
     }
 
     public void rejectFriendRequest(Long requestId) {
-        FriendRequest fr = friendRequestRepo.findById(requestId).orElse(null);
-        if(fr == null) throw new RuntimeException("searching friend for non existing request");
-        User receiver = fr.getReceiver();
-        receiver.rejectFriendRequest(fr);
+        FriendRequest fr = friendRequestRepo.findWithLock(requestId)
+                .orElseThrow(() -> new RuntimeException("Friend request not found"));
+
+        Long senderId = fr.getSender().getId();
+        User sender = userRepo.findWithLock(senderId).orElseThrow(() -> new RuntimeException("user not found"));
+        Long receiverId = fr.getReceiver().getId();
+        User receiver = userRepo.findWithLock(receiverId).orElseThrow(() -> new RuntimeException("user not found"));
+
+        if (sender == null || receiver == null)
+            throw new RuntimeException("Sender or receiver is null");
+
+        if (receiver.getPendingRequests().contains(fr)) {
+            fr.setResult(false);
+            receiver.getPendingRequests().remove(fr);
+            sender.getSentRequests().remove(fr);
+        }
     }
 
     public List<User> getFriendsList(Long userId) {

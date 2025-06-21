@@ -1,14 +1,17 @@
 package com.example.controller;
 
+import com.example.DTOs.ChallengeAcceptanceDTO;
 import com.example.model.questions.Question;
 import com.example.model.quizes.Quiz;
 import com.example.model.quizes.QuizResult;
 import com.example.model.users.User;
 import com.example.service.QuizService;
+import com.example.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -17,8 +20,11 @@ import java.util.Map;
 public class QuizController {
     private final QuizService quizService;
 
-    public QuizController(QuizService quizService) {
+    private final UserService userService;
+
+    public QuizController(QuizService quizService, UserService userService) {
         this.quizService = quizService;
+        this.userService = userService;
     }
 
     @RequestMapping("/quiz/{id}")
@@ -61,14 +67,23 @@ public class QuizController {
     public String startQuiz(@PathVariable Long id,
                             Model model,
                             HttpSession session,
-                            @RequestParam(value = "newFriendRequestSent", required = false) Boolean sent) {
+                            @RequestParam(value = "newFriendRequestSent", required = false) Boolean sent,
+                            @ModelAttribute("dto") ChallengeAcceptanceDTO dto) {
         model.addAttribute("quiz", quizService.getQuizById(id));
         if((User)session.getAttribute("user") == null) {
             return "redirect:/login";
         }
         User user = (User) session.getAttribute("user");
+        model.addAttribute("friends", userService.getUserFriends(user.getId()));
         model.addAttribute("user",user);
         model.addAttribute("newFriendRequestSent",sent);
+
+        if(dto != null && dto.quizResult() != null && dto.getQuiz() != null) {
+            model.addAttribute("dto", dto);
+        }else {
+            model.addAttribute("dto", null);
+        }
+
         return "quizStartPage";
     }
 
@@ -81,7 +96,7 @@ public class QuizController {
 
         long curTime = System.currentTimeMillis();
         Long startTime = (Long) session.getAttribute("startTime");
-        Long elapsedTime = ((curTime - startTime) / 1000L);
+        long elapsedTime = ((curTime - startTime) / 1000L);
 
         Quiz quiz = (Quiz) session.getAttribute("quiz");
         User user = (User) session.getAttribute("user");

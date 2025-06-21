@@ -4,7 +4,6 @@ import com.example.model.quizes.Quiz;
 import com.example.model.quizes.QuizResult;
 import com.example.model.users.chat.Chat;
 import jakarta.persistence.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +24,6 @@ public class User {
     private String password;
 
     @ManyToMany
-    @JoinTable(
-            name = "user_friends",
-            joinColumns =  @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "friend_id"),
-            uniqueConstraints = @UniqueConstraint(
-                    columnNames = { "user_id", "friend_id" }
-            )
-    )
     private List<User> friends = new ArrayList<>();
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
@@ -47,7 +38,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<QuizResult> userHistory;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Challenge> challenges;
 
     @Column(nullable = false)
@@ -69,42 +60,6 @@ public class User {
 
     public void demote() {
         this.admin = false;
-    }
-
-    public void acceptFriendRequest(FriendRequest request) {
-        if (!this.pendingRequests.contains(request)) return;
-
-        User sender = request.getSender();
-
-        if (this.friends.contains(sender) && sender.getFriends().contains(this)) {
-            pendingRequests.remove(request);
-            return;
-        }
-
-        if (this.friends.contains(sender) || sender.getFriends().contains(this)) {
-            throw new RuntimeException("Friendship data is inconsistent between users.");
-        }
-
-        request.setResult(true);
-
-        if(this.id > sender.getId()) {
-            request.getSender().friends.add(this);
-            this.friends.add(request.getSender());
-        }else {
-            this.friends.add(request.getSender());
-            request.getSender().friends.add(this);
-        }
-
-        this.pendingRequests.remove(request);
-        request.getSender().sentRequests.remove(request);
-    }
-
-    public void rejectFriendRequest(FriendRequest request) {
-        if (this.pendingRequests.contains(request)) {
-            request.setResult(false);
-            this.pendingRequests.remove(request);
-            request.getSender().sentRequests.remove(request);
-        }
     }
 
     public Long getId() { return id; }
@@ -146,9 +101,13 @@ public class User {
 
     public List<QuizResult> getUserHistory() { return userHistory; }
 
+
+    // TODO : this and its usage in quiz class must move to service layer
     public void addResultToHistory(QuizResult result) {
         userHistory.add(result);
     }
+
+
 
     public void challengeAcceptedOrRejected(Challenge challenge) {
         challenges.remove(challenge);
@@ -158,19 +117,13 @@ public class User {
         challenges.add(challenge);
     }
 
-    public Challenge challengeUser(User receiver,Quiz quiz) {
-        Challenge ch = new Challenge(this,receiver,quiz);
-        receiver.receiveChallenge(ch);
-        return ch;
-    }
-
     public List<Challenge> getChallenges() { return challenges; }
 
     // TODO : ================== IMPLEMENT METHODS ======================
 
     public QuizResult getBestScore(Quiz quiz) {
         // TODO : MUST WRITE COMPARATOR FOR QUIZRESULT  CLASS
-        return null;
+        return userHistory.get(0);
     }
 
     private String hashPassword(String pas) {
