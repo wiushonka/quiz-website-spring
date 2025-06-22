@@ -5,6 +5,7 @@ import com.example.model.users.User;
 import com.example.service.FriendService;
 import com.example.service.HomepageService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +40,8 @@ public class HomepageController {
         model.addAttribute("recentQuizTaking",homepageService.getUserRecentQuizTakes(user.getId()));
         model.addAttribute("recentQuizCreating",homepageService.getRecentQuizCreats(user.getId()));
         model.addAttribute("recentChallenges", homepageService.getRecentChallenges(user.getId()));
+
+        model.addAttribute("acts",homepageService.getRecentFriendActivities(user.getId(),PageRequest.of(0, 30)));
 
         List<FriendRequest> reqs = friendService.getFriendRequests(user.getId());
         model.addAttribute("friendRequests",reqs);

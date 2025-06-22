@@ -4,6 +4,10 @@ import com.example.model.questions.Question;
 import com.example.model.quizes.Quiz;
 import com.example.model.quizes.QuizResult;
 import com.example.model.users.User;
+import com.example.model.users.activities.FriendActivity;
+import com.example.model.users.activities.createdQuiz;
+import com.example.model.users.activities.tookQuiz;
+import com.example.repos.FriendActivityRepo;
 import com.example.repos.QuizRepo;
 import com.example.repos.UserRepo;
 import org.jetbrains.annotations.NotNull;
@@ -19,9 +23,12 @@ public class QuizService {
 
     private final UserRepo userRepo;
 
-    public QuizService(QuizRepo quizRepo, UserRepo userRepo) {
+    private final FriendActivityRepo fracRepo;
+
+    public QuizService(QuizRepo quizRepo, UserRepo userRepo, FriendActivityRepo fracRepo) {
         this.userRepo = userRepo;
         this.quizRepo = quizRepo;
+        this.fracRepo = fracRepo;
     }
 
     public Quiz getQuizById(Long id) {
@@ -43,9 +50,13 @@ public class QuizService {
         if(quiz == null || user == null) throw new IllegalArgumentException("Quiz or User not found");
 
         QuizResult result = new QuizResult(elapsedTime, score, quiz, user);
-
         quiz.getHistory().add(result);
         user.getUserHistory().add(result);
+
+        FriendActivity act = new tookQuiz(user.getId(),result.getId(),user.getUsername());
+        User us = userRepo.findById(quiz.getAuthor().getId()).orElseThrow(()->new RuntimeException("User not found"));
+
+        fracRepo.save(act);
     }
 
     public List<Quiz> getAllQuizzs() {

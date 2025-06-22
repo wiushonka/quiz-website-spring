@@ -2,8 +2,14 @@ package com.example.controller;
 
 import com.example.model.users.FriendRequest;
 import com.example.model.users.User;
+import com.example.model.users.activities.FriendActivity;
 import com.example.service.FriendService;
+import com.example.service.HomepageService;
+import com.example.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.ui.Model;
@@ -19,8 +25,11 @@ public class FriendController {
 
     private final FriendService friendService;
 
-    public FriendController(FriendService friendService) {
+    private final HomepageService homepageService;
+
+    public FriendController(FriendService friendService, HomepageService homepageService) {
         this.friendService = friendService;
+        this.homepageService = homepageService;
     }
 
     @PostMapping("/friend/send")
@@ -68,5 +77,13 @@ public class FriendController {
         List<User> nonFriends = friendService.getNonFriendUsers(user.getId());
         model.addAttribute("nonFriends", nonFriends);
         return "searchFriends";
+    }
+
+    @GetMapping("/showAllFriendActs")
+    public String showAllFriendActs(HttpSession session, Model model) {
+        User user = (User)session.getAttribute("user");
+        List<FriendActivity> acts = homepageService.getRecentFriendActivities(user.getId(), Pageable.unpaged());
+        model.addAttribute("acts", acts);
+        return "showAllFriendActs";
     }
 }

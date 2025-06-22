@@ -3,7 +3,6 @@ package com.example.model.quizes;
 import com.example.model.questions.Question;
 import com.example.model.users.User;
 import jakarta.persistence.*;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

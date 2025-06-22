@@ -158,6 +158,61 @@
             background-color: #1565c0;
         }
 
+        #activities-panel {
+            position: fixed;
+            bottom: 125px;
+            left: 400px;
+            width: 600px;
+            height: 150px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 998;
+        }
+
+        .activities-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            background-color: #f0f0f0;
+        }
+
+        .see-more-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .see-more-btn:hover {
+            background-color: #1976d2;
+        }
+
+        .activities-list {
+            overflow-y: auto;
+            padding: 0.5rem 1rem;
+            flex-grow: 1;
+        }
+
+        .activities-list ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .activities-list li {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
 
     </style>
 </head>
@@ -331,6 +386,45 @@
                 <div class="create-details">
                     Type: <span th:text="${c.type}"/> |
                     Author: <span th:text="${c.author.username}"/>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Friend Activities Panel -->
+<div id="activities-panel">
+    <div class="activities-header">
+        <span>Friend Activities</span>
+        <form th:action="@{/showAllFriendActs}" method="get" style="margin-left:auto;">
+            <button type="submit" class="see-more-btn">See More</button>
+        </form>
+    </div>
+    <div class="activities-list">
+        <ul>
+            <li th:if="${acts == null or #lists.isEmpty(acts)}">
+                <span>No friend activities available.</span>
+            </li>
+            <li th:each="act : ${acts}">
+                <div>
+                    <p>
+                        <strong>User:</strong>
+                        <a th:href="@{/user/{id}(id=${act.userId})}" th:text="'User ID: ' + ${act.userId}">User</a>
+                    </p>
+                    <p>
+                        <strong>Activity:</strong>
+                        <span th:text="${act.activity}">Activity Description</span>
+                    </p>
+                    <div th:if="${act.quizId != null}">
+                        <p>
+                            <strong>Related Quiz:</strong>
+                            <a th:href="@{/quiz/startQuiz/{id}(id=${act.quizId})}" th:text="'Quiz ID: ' + ${act.quizId}">Quiz</a>
+                        </p>
+                    </div>
+                    <p>
+                        <strong>Date:</strong>
+                        <span th:text="${#temporals.format(act.createdAt, 'yyyy-MM-dd HH:mm')}">Date</span>
+                    </p>
                 </div>
             </li>
         </ul>
