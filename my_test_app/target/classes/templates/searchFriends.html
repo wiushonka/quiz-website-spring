@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Search Friends</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            width: 50%;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .user-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .user-box {
+            width: 800px; /* wider box in the X direction */
+            height: 25px; /* fixed height to prevent Y growth */
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .user-box:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.03);
+        }
+
+        .no-users {
+            text-align: center;
+            font-style: italic;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Search for Friends</h1>
+
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search usernames..." onkeyup="filterUsers()">
+</div>
+
+<div th:if="${nonFriends == null or #lists.isEmpty(nonFriends)}" class="no-users">
+    No unfrendly users available.
+</div>
+
+<div th:if="${nonFriends != null and !#lists.isEmpty(nonFriends)}" class="user-grid" id="userGrid">
+    <div th:each="user : ${nonFriends}"
+         class="user-box"
+         th:text="${user.username}"
+         th:onclick="'window.location.href=\'/user/' + ${user.id} + '\';'">
+    </div>
+</div>
+
+<script>
+    function filterUsers() {
+        let input = document.getElementById("searchInput");
+        let filter = input.value.toLowerCase();
+        let boxes = document.getElementById("userGrid").getElementsByClassName("user-box");
+
+        for (let i = 0; i < boxes.length; i++) {
+            let text = boxes[i].textContent || boxes[i].innerText;
+            boxes[i].style.display = text.toLowerCase().includes(filter) ? "" : "none";
+        }
+    }
+</script>
+
+</body>
+</html>

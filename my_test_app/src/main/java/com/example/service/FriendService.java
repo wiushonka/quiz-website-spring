@@ -8,6 +8,7 @@ import com.example.repos.UserRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -113,5 +114,17 @@ public class FriendService {
 
         removerUser.getFriends().remove(removedUser);
         removedUser.getFriends().remove(removerUser);
+    }
+
+    public List<User> getNonFriendUsers(Long userId) {
+        List<User> allUsers = userRepo.findAll();
+        User user = userRepo.findById(userId).orElse(null);
+        if(user == null) throw new RuntimeException("searching non friends for non existing user");
+        List<User> friends = user.getFriends();
+        List<User> nonFriends = new ArrayList<User>();
+        for(User u:allUsers) {
+            if(!friends.contains(u) && !u.getId().equals(userId)) nonFriends.add(u);
+        }
+        return nonFriends;
     }
 }
