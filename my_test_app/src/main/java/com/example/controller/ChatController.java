@@ -23,21 +23,34 @@ public class ChatController {
         this.userService = userService;
     }
 
-    @GetMapping("/{chatId}")
-    public String openChat(@PathVariable Long chatId, Model model) {
-        List<Message> messages = chatService.getMessagesByChatId(chatId, 0, 20);
+    @GetMapping("/chat/{chatId}")
+    public String openChat(@PathVariable Long chatId, Model model,
+                           @RequestParam(value = "showAll", required = false) String showAll,
+                           HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if(user == null) return "redirect:/login";
+
+        List<Message> messages = List.of();
+        if(showAll == null) {
+            messages = chatService.getMessagesByChatId(chatId, 0, 100);
+        }else if(showAll.equals("all")) {
+            messages = chatService.seeAllMessagesByChatId(chatId);
+        }
         model.addAttribute("chatId", chatId);
         model.addAttribute("messages", messages);
+        model.addAttribute("user",user);
         return "chat";
     }
 
-    @GetMapping("/{chatId}/messages")
-    @ResponseBody
-    public List<Message> loadMoreMessages(@PathVariable Long chatId,
-                                          @RequestParam int page,
-                                          @RequestParam(defaultValue = "20") int size) {
-        return chatService.getMessagesByChatId(chatId, page, size);
-    }
+    // TODO: NEED THIS IF SCROLLABLE CHAT IS FULLY IMPLEMENTED
+//    @GetMapping("/{chatId}/messages")
+//    @ResponseBody
+//    public List<Message> loadMoreMessages(@PathVariable Long chatId,
+//                                          @RequestParam int page,
+//                                          @RequestParam(defaultValue = "100") int size) {
+//        return chatService.getMessagesByChatId(chatId, page, size);
+//    }
+
 
     @PostMapping("/chat/{chatId}/send")
     public String sendMessage(@PathVariable Long chatId,
@@ -45,7 +58,7 @@ public class ChatController {
                               HttpSession session) {
         User user = (User) session.getAttribute("user");
         chatService.sendMessage(chatId,text,user);
-        return "redirect:/" + chatId;
+        return "redirect:/chat/" + chatId;
     }
 
     @GetMapping("/chatWithOneUser")
@@ -57,6 +70,6 @@ public class ChatController {
         users.add(first);
         users.add(second);
         Long chatId = chatService.startChat(users);
-        return "redirect:/" + chatId;
+        return "redirect:/chat/" + chatId;
     }
 }

@@ -1,18 +1,16 @@
 package com.example.controller;
 
-import com.example.model.quizes.Quiz;
 import com.example.model.users.FriendRequest;
 import com.example.model.users.User;
 import com.example.service.FriendService;
 import com.example.service.HomepageService;
-import com.example.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -40,7 +38,7 @@ public class HomepageController {
         model.addAttribute("user",user);
         model.addAttribute("recentQuizTaking",homepageService.getUserRecentQuizTakes(user.getId()));
         model.addAttribute("recentQuizCreating",homepageService.getRecentQuizCreats(user.getId()));
-        model.addAttribute("recentChallenges", homepageService.getChallenges(user.getId()));
+        model.addAttribute("recentChallenges", homepageService.getRecentChallenges(user.getId()));
 
         List<FriendRequest> reqs = friendService.getFriendRequests(user.getId());
         model.addAttribute("friendRequests",reqs);

@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.model.users.Challenge;
 import com.example.model.users.FriendRequest;
 import com.example.model.users.User;
 import com.example.repos.FriendRequestRepo;

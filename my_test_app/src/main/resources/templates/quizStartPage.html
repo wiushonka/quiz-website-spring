@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <title>Start Quiz</title>
   <style>
     body {
@@ -23,25 +23,24 @@
       gap: 2rem;
     }
 
-    .left-panel {
-      width: 40%;
+    .left-panel, .right-panel {
       background-color: #fff;
-      padding: 1.5rem;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      height: fit-content;
+    }
+
+    .left-panel {
+      width: 40%;
+      padding: 1.5rem;
     }
 
     .right-panel {
       width: 60%;
-      background-color: #fff;
       padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       text-align: center;
     }
 
-    h1 {
+    h1, h3 {
       margin-bottom: 1rem;
     }
 
@@ -83,19 +82,6 @@
       opacity: 0.9;
     }
 
-    .status-message {
-      font-weight: bold;
-      margin-top: 1rem;
-    }
-
-    .status-success {
-      color: green;
-    }
-
-    .status-warning {
-      color: orange;
-    }
-
     .friend-scroll {
       max-height: 300px;
       overflow-y: auto;
@@ -127,12 +113,23 @@
       max-width: 120px;
     }
 
-    .author-info {
+    .challenge-info {
       margin-top: 2rem;
       border-top: 1px solid #ccc;
       padding-top: 1rem;
     }
 
+    .author-info {
+      margin-top: 2rem;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+      text-align: left;
+    }
+
+    .author-info form {
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -150,21 +147,22 @@
           <span class="friend-name" th:text="${friend.username}">Friend</span>
           <form th:action="@{/sendChallenge}" method="post" style="margin: 0;">
             <input type="hidden" name="recieverId" th:value="${friend.id}" />
-            <input type="hidden" name="quizId" th:value="${quiz.id}" />
-            <button type="submit" class="btn friend-btn small-btn">Challenge</button>
+            <input type="hidden" name="quizId"     th:value="${quiz.id}"   />
+            <button type="submit" class="btn friend-btn small-btn">
+              Challenge
+            </button>
           </form>
         </li>
       </ul>
     </div>
 
-    <!-- NEW PART -->
-    <div th:if="${dto != null}" class="challenge-info" style="margin-top: 2rem;">
+    <!-- Challenger's Best Score (if present) -->
+    <div th:if="${dto != null}" class="challenge-info">
       <h3>Challenger's Best Score</h3>
-      <p><strong>Time:</strong> <span th:text="${dto.quizResult.time}">0</span> seconds</p>
+      <p><strong>Time:</strong>   <span th:text="${dto.quizResult.time}">0</span> seconds</p>
       <p><strong>Points:</strong> <span th:text="${dto.quizResult.points}">0.0</span></p>
-      <p><strong>Date:</strong> <span th:text="${dto.quizResult.resultDate}">N/A</span></p>
+      <p><strong>Date:</strong>   <span th:text="${dto.quizResult.resultDate}">N/A</span></p>
     </div>
-
   </div>
 
   <!-- Right Panel -->
@@ -175,7 +173,6 @@
     <form th:action="@{/quiz/{id}(id=${quiz.id})}" method="get">
       <button type="submit" class="btn start-btn">Start Quiz</button>
     </form>
-
     <form th:action="@{/homepage}" method="get">
       <button type="submit" class="btn back-btn">Back to Homepage</button>
     </form>
@@ -184,25 +181,13 @@
       <h3>Author Info</h3>
       <p th:text="'Username: ' + ${quiz.author.username}">Author Username</p>
 
-      <div th:if="${user.id != quiz.author.id}">
-        <form th:if="${newFriendRequestSent == null}" th:action="@{/friend/send}" method="post">
-          <input type="hidden" name="receiverId" th:value="${quiz.author.id}" />
-          <input type="hidden" name="quizId" th:value="${quiz.id}" />
-          <button type="submit" class="btn friend-btn">Send Friend Request</button>
-        </form>
-
-        <p th:if="${newFriendRequestSent == true}" class="status-message status-success">
-          Friend request sent!
-        </p>
-
-        <p th:if="${newFriendRequestSent == false}" class="status-message status-warning">
-          You are already friends or request was already sent.
-        </p>
-      </div>
-
-      <p th:if="${user.id == quiz.author.id}" style="color: gray;">
-        You are the author of this quiz.
-      </p>
+      <!-- SEE USER PROFILE -->
+      <form th:action="@{/user/{userId}(userId=${quiz.author.id})}"
+            method="get">
+        <button type="submit" class="btn small-btn">
+          See User Profile
+        </button>
+      </form>
     </div>
   </div>
 </div>

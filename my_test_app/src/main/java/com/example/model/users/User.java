@@ -2,6 +2,7 @@ package com.example.model.users;
 
 import com.example.model.quizes.Quiz;
 import com.example.model.quizes.QuizResult;
+import com.example.model.users.achievements.Achievements;
 import com.example.model.users.chat.Chat;
 import jakarta.persistence.*;
 
@@ -44,6 +45,9 @@ public class User {
     @Column(nullable = false)
     private boolean admin;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Achievements> achis;
+
     public User() {}
 
     public User(String username, String password) {
@@ -51,8 +55,11 @@ public class User {
         this.password = hashPassword(password);
         userHistory = new ArrayList<>();
         challenges = new ArrayList<>();
+        achis = new ArrayList<>();
         admin = false;
     }
+
+    public List<Achievements> getAchievements() { return achis; }
 
     public void promote() {
         this.admin = true;
@@ -107,8 +114,6 @@ public class User {
         userHistory.add(result);
     }
 
-
-
     public void challengeAcceptedOrRejected(Challenge challenge) {
         challenges.remove(challenge);
     }
@@ -122,7 +127,7 @@ public class User {
     // TODO : ================== IMPLEMENT METHODS ======================
 
     public QuizResult getBestScore(Quiz quiz) {
-        // TODO : MUST WRITE COMPARATOR FOR QUIZRESULT  CLASS
+        // TODO : MUST WRITE COMPARATOR FOR QUIZRESULT  CLASS ALSO FIX BUG: NULL CHECK FOR VIEW
         return userHistory.get(0);
     }
 

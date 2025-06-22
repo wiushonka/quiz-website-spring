@@ -40,20 +40,20 @@ public class HomepageService {
         // TODO remove line 43 only tests
         // LocalDateTime secsBefore = LocalDateTime.now().minusSeconds(15);
         LocalDateTime lastDay = LocalDateTime.now().minusDays(1);
-        return this.quizRepo.getDayLastTenQuizs(lastDay,PageRequest.of(0,10)).getContent();
+        return this.quizRepo.getDayLastTenQuizs(lastDay,PageRequest.of(0,20)).getContent();
     }
 
     public List<QuizResult> getUserRecentQuizTakes(Long userId) {
         LocalDateTime lastTenDays = LocalDateTime.now().minusDays(10);
-        return this.userRepo.getRecentUserQuizs(lastTenDays,PageRequest.of(0,10)).getContent();
+        return this.userRepo.getRecentUserQuizs(lastTenDays,userId,PageRequest.of(0,20)).getContent();
     }
 
     public List<Quiz> getRecentQuizCreats(Long userId) {
         LocalDateTime lastTenDays = LocalDateTime.now().minusDays(10);
-        return this.quizRepo.getRecentUserQuizCreations(userId,lastTenDays,PageRequest.of(0,10)).getContent();
+        return this.quizRepo.getRecentUserQuizCreations(userId,lastTenDays,PageRequest.of(0,20)).getContent();
     }
 
-    public List<Challenge> getChallenges(Long userId) {
-        return this.userRepo.getChallenges(userId,PageRequest.of(0,10));
+    public List<Challenge> getRecentChallenges(Long userId) {
+        return this.userRepo.getRecentChallenges(userId,PageRequest.of(0,20));
     }
 }

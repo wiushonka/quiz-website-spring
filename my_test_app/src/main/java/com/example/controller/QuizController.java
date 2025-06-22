@@ -67,7 +67,6 @@ public class QuizController {
     public String startQuiz(@PathVariable Long id,
                             Model model,
                             HttpSession session,
-                            @RequestParam(value = "newFriendRequestSent", required = false) Boolean sent,
                             @ModelAttribute("dto") ChallengeAcceptanceDTO dto) {
         model.addAttribute("quiz", quizService.getQuizById(id));
         if((User)session.getAttribute("user") == null) {
@@ -76,7 +75,6 @@ public class QuizController {
         User user = (User) session.getAttribute("user");
         model.addAttribute("friends", userService.getUserFriends(user.getId()));
         model.addAttribute("user",user);
-        model.addAttribute("newFriendRequestSent",sent);
 
         if(dto != null && dto.quizResult() != null && dto.getQuiz() != null) {
             model.addAttribute("dto", dto);

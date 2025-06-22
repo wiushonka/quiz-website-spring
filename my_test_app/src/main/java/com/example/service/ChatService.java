@@ -10,11 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -32,7 +28,13 @@ public class ChatService {
 
     public List<Message> getMessagesByChatId(Long chatId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return chatRepo.findTopByChatIdOrderByDateDesc(chatId, pageable);
+        return chatRepo.findTopByChatIdOrderByDateDesc(chatId, pageable).getContent();
+    }
+
+    public List<Message> seeAllMessagesByChatId(Long chatId) {
+        Chat chat = chatRepo.findById(chatId).orElse(null);
+        if(chat == null) throw new RuntimeException("no chat found");
+        return chat.getMessages();
     }
 
     public void sendMessage(Long chatId, String text,User user) {

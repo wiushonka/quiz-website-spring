@@ -21,7 +21,6 @@ public class FriendController {
 
     @PostMapping("/friend/send")
     public String sendFriendRequest(@RequestParam("receiverId") Long receiverId,
-                                    @RequestParam("quizId") Long quizId,
                                     HttpSession session,
                                     RedirectAttributes redData) {
         User sen = (User)session.getAttribute("user");
@@ -36,7 +35,7 @@ public class FriendController {
         }else {
             redData.addAttribute("newFriendRequestSent", true);
         }
-        return "redirect:/quiz/startQuiz/" + quizId;
+        return "redirect:/user/" + receiverId;
     }
 
     @PostMapping("friend/accept")

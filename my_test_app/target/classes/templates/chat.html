@@ -1,77 +1,120 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <title>Chat</title>
   <style>
-    #chat-box {
-      height: 400px;
-      overflow-y: scroll;
-      border: 1px solid #ccc;
-      padding: 10px;
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
       display: flex;
-      flex-direction: column-reverse;
-      margin-bottom: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+    #chat-container {
+      width: 90vw; max-width: 600px; height: 90vh;
+      background: #fff; border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    header, footer {
+      padding: 10px; background: #fafafa; border-bottom: 1px solid #eee;
+    }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    header h2 { margin: 0; font-size: 1.1rem; }
+    #show-all-form button {
+      padding: 4px 8px; font-size: 0.9rem; cursor: pointer;
+    }
+    #chat-box {
+      flex: 1; padding: 10px;
+      display: flex; flex-direction: column;   /* normal order */
+      overflow-y: auto;
+      background: #fff;
     }
     .message {
-      margin-bottom: 10px;
+      max-width: 75%; margin: 6px; padding: 8px 12px;
+      border-radius: 16px; position: relative;
+      word-wrap: break-word;
     }
-    #message-form {
-      display: flex;
-      gap: 5px;
+    .message .time {
+      font-size: 0.7rem; opacity: 0.6;
+      position: absolute; bottom: -14px; right: 8px;
+    }
+    .message.mine {
+      background: #cdeffd; align-self: flex-start;  /* you on left */
+    }
+    .message.other {
+      background: #eee; align-self: flex-end;        /* others on right */
+    }
+    footer {
+      display: flex; gap: 8px; border-top: 1px solid #eee;
     }
     #message-input {
-      flex-grow: 1;
-      padding: 5px;
-      font-size: 1rem;
+      flex: 1; padding: 8px; font-size: 1rem;
+      border: 1px solid #ccc; border-radius: 4px;
     }
-    #send-button {
-      padding: 5px 10px;
-      font-size: 1rem;
-      cursor: pointer;
+    #send-button, #back-button {
+      padding: 8px 12px; font-size: 1rem;
+      background: #007bff; color: #fff; border: none;
+      border-radius: 4px; cursor: pointer;
+    }
+    #back-button {
+      margin: 8px; width: calc(100% - 16px);
+      text-align: center;
     }
   </style>
 </head>
 <body>
+
 <div id="chat-container">
+
+  <header>
+    <h2>Chat #<span th:text="${chatId}">ID</span></h2>
+    <form id="show-all-form"
+          th:action="@{/chat/{chatId}(chatId=${chatId})}"
+          method="get">
+      <input type="hidden" name="showAll" value="all"/>
+      <button type="submit" th:if="${showAll == null}">Show All</button>
+    </form>
+  </header>
+
   <div id="chat-box">
-    <!-- Existing messages -->
-    <div th:each="message : ${messages}" class="message">
-      <span th:text="${#temporals.format(message.date, 'HH:mm')}">…</span>
-      <span th:text="${message.text}"></span>
+    <div th:each="message : ${messages}"
+         class="message"
+         th:classappend="${message.user.id == user.id} ? ' mine' : ' other'">
+      <span th:text="${message.text}">Message text</span>
+      <span class="time"
+            th:text="${#temporals.format(message.date,'HH:mm')}">12:34</span>
     </div>
   </div>
 
-  <!-- Send message form -->
-  <form id="message-form" th:action="@{/chat/{chatId}/send(chatId=${chatId})}" method="post">
-    <label for="message-input" class="sr-only">Message:</label>
-    <input type="text" id="message-input" name="text" placeholder="Type your message..." required />
-    <button type="submit" id="send-button">Send</button>
-  </form>
+  <footer>
+    <form th:action="@{/chat/{chatId}/send(chatId=${chatId})}"
+          method="post" style="display:flex; width:100%">
+      <input type="text" id="message-input" name="text"
+             placeholder="Type your message…" required/>
+      <button type="submit" id="send-button">Send</button>
+    </form>
+  </footer>
+
 </div>
 
-<script>
-  // Pagination scroll loader (optional enhancement)
-  let page = 1;
-  const chatBox = document.getElementById('chat-box');
-  const chatId = /*[[${chatId}]]*/ '0';
+<form th:action="@{/homepage}" method="get">
+  <button type="submit" id="back-button">&larr; Back to Homepage</button>
+</form>
 
-  chatBox.addEventListener('scroll', () => {
-    if (chatBox.scrollTop === (chatBox.scrollHeight - chatBox.clientHeight)) {
-      fetch(`/chat/${chatId}/messages?page=${page}&size=20`)
-              .then(res => res.json())
-              .then(messages => {
-                if (messages.length === 0) return;
-                messages.reverse().forEach(msg => {
-                  const div = document.createElement('div');
-                  div.classList.add('message');
-                  div.innerHTML = `<strong>${new Date(msg.date).toLocaleTimeString()}</strong>: ${msg.text}`;
-                  chatBox.appendChild(div);
-                });
-                page++;
-              });
-    }
+<script>
+  const chatBox = document.getElementById('chat-box');
+
+  // On every load or reload, scroll to bottom so the newest message is visible:
+  window.addEventListener('load', () => {
+    chatBox.scrollTop = chatBox.scrollHeight;
   });
 </script>
+
 </body>
 </html>

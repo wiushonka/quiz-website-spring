@@ -26,4 +26,5 @@ public interface QuizRepo extends JpaRepository<Quiz, Long> {
     Page<Quiz> getRecentUserQuizCreations(@Param("userId") Long userId,
                                           @Param("cutoff") LocalDateTime cutoff, Pageable pageable);
 
+    List<Quiz> findQuizByAuthorId(Long authorId);
 }

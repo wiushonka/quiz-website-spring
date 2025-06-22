@@ -137,6 +137,28 @@
         }
         ul { list-style: none; padding: 0; margin: 0; }
         li { padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+
+        .profile-button {
+            position: fixed;
+            bottom: 90px;
+            right: 30px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.4rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+            z-index: 9999;
+        }
+        .profile-button:hover {
+            background-color: #1565c0;
+        }
+
+
     </style>
 </head>
 <body>
@@ -185,6 +207,14 @@
                     </form>
                 </div>
             </div>
+
+            <!-- View All Challenges Button -->
+            <div style="margin-top: 20px;">
+                <a th:href="@{/allChallenges/{id}(id=${user.id})}">
+                    <button>View All Challenges</button>
+                </a>
+            </div>
+
         </div>
 
     </div>
@@ -240,6 +270,10 @@
         </form>
     </div>
 </div>
+
+<form th:action="@{/user/{id}(id=${user.id})}" method="get">
+    <button type="submit" class="profile-button">View My Profile</button>
+</form>
 
 <!-- Floating Create Quiz Button -->
 <form th:action="@{/createQuiz}" method="get">

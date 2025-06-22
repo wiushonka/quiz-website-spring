@@ -1,5 +1,6 @@
 package com.example.model.users.achievements;
 
+import com.example.model.users.User;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,8 +11,21 @@ public abstract class Achievements {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @ManyToOne
+    private User user;
+
+    public Achievements(User user) {
+        this.user = user;
+    }
+
+    public Achievements() {}
+
     public Long getId() {
         return id;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public abstract String getName();

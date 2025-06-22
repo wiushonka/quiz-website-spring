@@ -8,9 +8,10 @@ import com.example.model.users.User;
 import com.example.repos.ChallengesRepo;
 import com.example.repos.QuizRepo;
 import com.example.repos.UserRepo;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -65,5 +66,9 @@ public class ChallengeService {
         if(receiver == null) throw new RuntimeException("User not found");
         receiver.getChallenges().remove(chal);
         chalRepo.delete(chal);
+    }
+
+    public List<Challenge> getAllChallenges(Long userId) {
+        return chalRepo.findByReceiverId(userId);
     }
 }
