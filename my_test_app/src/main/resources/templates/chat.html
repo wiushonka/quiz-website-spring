@@ -9,15 +9,16 @@
       font-family: Arial, sans-serif;
       background: #f2f2f2;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
     }
     #chat-container {
-      width: 90vw; max-width: 600px; height: 90vh;
+      width: 90vw; max-width: 600px; height: 85vh;
       background: #fff; border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       display: flex; flex-direction: column;
       overflow: hidden;
+      margin-top: 20px;
     }
     header, footer {
       padding: 10px; background: #fafafa; border-bottom: 1px solid #eee;
@@ -26,17 +27,13 @@
       display: flex; justify-content: space-between; align-items: center;
     }
     header h2 { margin: 0; font-size: 1.1rem; }
-    #show-all-form button {
-      padding: 4px 8px; font-size: 0.9rem; cursor: pointer;
-    }
     #chat-box {
       flex: 1; padding: 10px;
-      display: flex; flex-direction: column;   /* normal order */
+      display: flex; flex-direction: column;
       overflow-y: auto;
-      background: #fff;
     }
     .message {
-      max-width: 75%; margin: 6px; padding: 8px 12px;
+      max-width: 70%; margin: 6px; padding: 8px 12px;
       border-radius: 16px; position: relative;
       word-wrap: break-word;
     }
@@ -44,12 +41,8 @@
       font-size: 0.7rem; opacity: 0.6;
       position: absolute; bottom: -14px; right: 8px;
     }
-    .message.mine {
-      background: #cdeffd; align-self: flex-start;  /* you on left */
-    }
-    .message.other {
-      background: #eee; align-self: flex-end;        /* others on right */
-    }
+    .mine { background: #cdeffd; align-self: flex-start; }
+    .other { background: #eee;     align-self: flex-end; }
     footer {
       display: flex; gap: 8px; border-top: 1px solid #eee;
     }
@@ -62,58 +55,92 @@
       background: #007bff; color: #fff; border: none;
       border-radius: 4px; cursor: pointer;
     }
-    #back-button {
-      margin: 8px; width: calc(100% - 16px);
-      text-align: center;
-    }
+    #back-button { margin: 20px; width: calc(100% - 40px); }
   </style>
 </head>
 <body>
 
 <div id="chat-container">
-
   <header>
     <h2>Chat #<span th:text="${chatId}">ID</span></h2>
-    <form id="show-all-form"
-          th:action="@{/chat/{chatId}(chatId=${chatId})}"
-          method="get">
-      <input type="hidden" name="showAll" value="all"/>
-      <button type="submit" th:if="${showAll == null}">Show All</button>
-    </form>
+    <button id="show-all" th:if="${showAll == null}"
+            th:onclick="'window.location=\'/chat/' + ${chatId} + '?showAll=all\''">
+      Show All
+    </button>
   </header>
 
   <div id="chat-box">
-    <div th:each="message : ${messages}"
+    <!-- Initial messages loaded by Thymeleaf -->
+    <div th:each="msg : ${messages}"
          class="message"
-         th:classappend="${message.user.id == user.id} ? ' mine' : ' other'">
-      <span th:text="${message.text}">Message text</span>
+         th:classappend="${msg.user.id == user.id} ? ' mine' : ' other'">
+      <span th:text="${msg.user.username} + ': ' + ${msg.text}">username: text</span>
       <span class="time"
-            th:text="${#temporals.format(message.date,'HH:mm')}">12:34</span>
+            th:text="${#temporals.format(msg.date,'HH:mm')}">12:34</span>
     </div>
   </div>
 
   <footer>
-    <form th:action="@{/chat/{chatId}/send(chatId=${chatId})}"
-          method="post" style="display:flex; width:100%">
-      <input type="text" id="message-input" name="text"
-             placeholder="Type your message…" required/>
-      <button type="submit" id="send-button">Send</button>
-    </form>
+    <input type="text" id="message-input"
+           placeholder="Type your message…" required/>
+    <button id="send-button">Send</button>
   </footer>
-
 </div>
 
-<form th:action="@{/homepage}" method="get">
-  <button type="submit" id="back-button">&larr; Back to Homepage</button>
-</form>
+<button id="back-button" th:onclick="'window.location=\'/homepage\''">
+  &larr; Back to Homepage
+</button>
 
-<script>
+<!-- SockJS + STOMP -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const chatId   = /*[[${chatId}]]*/ 0;
+  const username = /*[['' + ${user.username}]]*/ '';
+
   const chatBox = document.getElementById('chat-box');
+  const input   = document.getElementById('message-input');
+  const sendBtn = document.getElementById('send-button');
 
-  // On every load or reload, scroll to bottom so the newest message is visible:
+  // 1. Connect
+  const socket = new SockJS('/ws');
+  const stompClient = Stomp.over(socket);
+  stompClient.connect({}, () => {
+    // 2. Subscribe to incoming messages
+    stompClient.subscribe(`/topic/chat/${chatId}`, frame => {
+      const msg = JSON.parse(frame.body);
+      appendMessage(msg.sender, msg.text, msg.timestamp);
+    });
+  });
+
+  // 3. Send button handler
+  sendBtn.addEventListener('click', () => {
+    const text = input.value.trim();
+    if (!text) return;
+    const dto = { chatId: chatId, text: text, sender: username };
+    stompClient.send('/app/chat.sendMessage', {}, JSON.stringify(dto));
+    input.value = '';
+  });
+
+  // 4. Append to DOM
+  function appendMessage(sender, text, timestamp) {
+    const el = document.createElement('div');
+    el.classList.add('message', sender === username ? 'mine' : 'other');
+    el.innerHTML = `
+        <span>${sender}: ${text}</span>
+        <span class="time">${new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+      `;
+    chatBox.appendChild(el);
+    // Auto-scroll
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // 5. Initial scroll-to-bottom
   window.addEventListener('load', () => {
     chatBox.scrollTop = chatBox.scrollHeight;
   });
+  /*]]>*/
 </script>
 
 </body>

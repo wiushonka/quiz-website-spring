@@ -36,7 +36,7 @@ public class Message {
 
     public LocalDateTime getDate() { return date; }
 
-    public String getText() { return user.getUsername() + ": " + text; }
+    public String getText() { return text; }
 
     public Chat getChat() { return chat; }
 

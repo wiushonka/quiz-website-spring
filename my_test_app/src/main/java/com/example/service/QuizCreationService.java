@@ -5,7 +5,7 @@ import com.example.model.quizes.Quiz;
 import com.example.model.users.User;
 import com.example.model.users.achievements.ProlificAuthor;
 import com.example.model.users.activities.FriendActivity;
-import com.example.model.users.activities.createdQuiz;
+import com.example.model.users.activities.CreatedQuiz;
 import com.example.repos.FriendActivityRepo;
 
 import com.example.repos.QuizRepo;
@@ -34,7 +34,7 @@ public class QuizCreationService {
 
     public Long createQuiz(Quiz quiz) {
         Quiz saved = quizRepo.save(quiz);
-        FriendActivity act = new createdQuiz(quiz.getAuthor().getId(),saved.getId(),saved.getAuthor().getUsername());
+        FriendActivity act = new CreatedQuiz(quiz.getAuthor().getId(),saved.getId(),saved.getAuthor().getUsername());
         User user = userRepo.findById(quiz.getAuthor().getId()).orElseThrow(()->new RuntimeException("User not found"));
         user.getAchievements().add(new ProlificAuthor());
         fracRepo.save(act);

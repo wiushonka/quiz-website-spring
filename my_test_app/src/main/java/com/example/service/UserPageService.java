@@ -9,6 +9,7 @@ import com.example.repos.QuizRepo;
 import com.example.repos.QuizResultRepo;
 import com.example.repos.UserRepo;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,10 @@ public class UserPageService {
     }
 
     public List<Achievements> userAchievements(Long userId) {
-        return userRepo.findUserAchievements(userId);
+        return userRepo.findUserAchievements(userId, Pageable.unpaged());
+    }
+
+    public List<Achievements> getRecentAchievements(Long userId) {
+        return userRepo.findUserAchievements(userId, PageRequest.of(0, 30));
     }
 }

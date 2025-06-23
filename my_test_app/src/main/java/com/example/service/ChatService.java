@@ -4,13 +4,13 @@ import com.example.model.users.User;
 import com.example.model.users.chat.Chat;
 import com.example.model.users.chat.Message;
 import com.example.repos.ChatRepo;
+import com.example.repos.MessagesRepo;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,29 +21,23 @@ public class ChatService {
 
     private final UserService userService;
 
-    public ChatService(ChatRepo chatRepo, UserService userService) {
+    private final MessagesRepo messagesRepo;
+
+    public ChatService(ChatRepo chatRepo, UserService userService, MessagesRepo messagesRepo) {
         this.chatRepo = chatRepo;
         this.userService = userService;
+        this.messagesRepo = messagesRepo;
     }
 
     public List<Message> getMessagesByChatId(Long chatId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return chatRepo.findTopByChatIdOrderByDateDesc(chatId, pageable).getContent();
+        return chatRepo.findTopByChatIdOrderByDateAsc(chatId, pageable).getContent();
     }
 
     public List<Message> seeAllMessagesByChatId(Long chatId) {
         Chat chat = chatRepo.findById(chatId).orElse(null);
         if(chat == null) throw new RuntimeException("no chat found");
         return chat.getMessages();
-    }
-
-    public void sendMessage(Long chatId, String text,User user) {
-        if(user == null) throw new RuntimeException("User not found");
-        Chat chat = chatRepo.findById(chatId).orElse(null);
-        if (chat == null) throw new RuntimeException("sending Message into chat which is null");
-        Message message = new Message(LocalDateTime.now(),text,chat,user);
-        chat.addMessage(message);
-        message.setChat(chat);
     }
 
     public Long startChat(@NotNull List<User> users) {
@@ -80,5 +74,13 @@ public class ChatService {
             userService.addUserToChat(chatId,user.getId());
         }
         return chatId;
+    }
+
+    public Chat getChatById(Long chatId) {
+        return chatRepo.findById(chatId).orElseThrow(()->new RuntimeException("no chat found"));
+    }
+
+    public void storeMessage(Message message) {
+        messagesRepo.save(message);
     }
 }

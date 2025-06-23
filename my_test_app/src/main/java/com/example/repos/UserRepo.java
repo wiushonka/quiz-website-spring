@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
@@ -32,5 +33,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
     Optional<User> findWithLock(@Param("userId") Long userId);
 
     @Query("SELECT a FROM User u JOIN u.achis a WHERE u.id = :userId")
-    List<Achievements> findUserAchievements(@Param("userId") Long userId);
+    List<Achievements> findUserAchievements(@Param("userId") Long userId, Pageable pageable);
 }

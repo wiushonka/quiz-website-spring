@@ -72,4 +72,8 @@ public class UserService {
         if(user == null) throw new RuntimeException("User not found");
         return user.getFriends();
     }
+
+    public User getUserByUsername(String username){
+        return userRepo.findByUsername(username);
+    }
 }

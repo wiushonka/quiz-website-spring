@@ -3,6 +3,8 @@ package com.example.model.users.admin;
 import com.example.model.users.User;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Announcement {
 
@@ -16,6 +18,8 @@ public class Announcement {
 
     private String content;
 
+    private LocalDateTime dateTime;
+
     @ManyToOne
     private User author;
 
@@ -25,6 +29,15 @@ public class Announcement {
         this.author = author;
         this.title = title;
         this.content = content;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        dateTime = LocalDateTime.now();
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     public Long getId() {

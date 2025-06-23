@@ -3,6 +3,8 @@ package com.example.model.users.achievements;
 import com.example.model.users.User;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Achievements {
@@ -14,11 +16,13 @@ public abstract class Achievements {
     @ManyToOne
     private User user;
 
+    private LocalDateTime dateTime;
+
+    public Achievements() {}
+
     public Achievements(User user) {
         this.user = user;
     }
-
-    public Achievements() {}
 
     public Long getId() {
         return id;
@@ -26,6 +30,15 @@ public abstract class Achievements {
 
     public User getUser() {
         return user;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        dateTime = LocalDateTime.now();
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     public abstract String getName();

@@ -42,25 +42,6 @@ public class ChatController {
         return "chat";
     }
 
-    // TODO: NEED THIS IF SCROLLABLE CHAT IS FULLY IMPLEMENTED
-//    @GetMapping("/{chatId}/messages")
-//    @ResponseBody
-//    public List<Message> loadMoreMessages(@PathVariable Long chatId,
-//                                          @RequestParam int page,
-//                                          @RequestParam(defaultValue = "100") int size) {
-//        return chatService.getMessagesByChatId(chatId, page, size);
-//    }
-
-
-    @PostMapping("/chat/{chatId}/send")
-    public String sendMessage(@PathVariable Long chatId,
-                              @RequestParam("text") String text,
-                              HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        chatService.sendMessage(chatId,text,user);
-        return "redirect:/chat/" + chatId;
-    }
-
     @GetMapping("/chatWithOneUser")
     public String createChatWithOneUser(HttpSession session,
                                         @RequestParam("clickedUserId") Long clickedUserId) {

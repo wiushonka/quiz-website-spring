@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Announcements</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    .announcements-container {
+      width: 80%;
+      max-width: 1000px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .announcement-card {
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 1.5rem;
+    }
+    .announcement-card:last-child {
+      border-bottom: none;
+    }
+    .announcement-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .announcement-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 0;
+      color: #333;
+    }
+    .announcement-meta {
+      font-size: 0.9rem;
+      color: #777;
+    }
+    .announcement-content {
+      font-size: 1rem;
+      color: #444;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    .back-button {
+      align-self: flex-start;
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .back-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<div class="announcements-container">
+  <h1>All Announcements</h1>
+  <div th:if="${#lists.isEmpty(announcements)}">
+    <p>No announcements available.</p>
+  </div>
+  <div th:each="ann : ${announcements}" class="announcement-card">
+    <div class="announcement-header">
+      <h2 class="announcement-title" th:text="${ann.title}">Announcement Title</h2>
+      <div class="announcement-meta">
+        <span th:text="${#temporals.format(ann.dateTime, 'yyyy-MM-dd HH:mm')}">2025-06-23 12:34</span>
+        &nbsp;|&nbsp;
+        <span th:text="'By: ' + ${ann.authorName}">By: Author</span>
+      </div>
+    </div>
+    <div class="announcement-content" th:text="${ann.content}">Announcement content goes here...</div>
+  </div>
+  <a th:href="@{/homepage}" class="back-button">&larr; Back to Homepage</a>
+</div>
+</body>
+</html>

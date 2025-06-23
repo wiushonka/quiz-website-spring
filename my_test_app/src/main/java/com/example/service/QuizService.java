@@ -5,8 +5,7 @@ import com.example.model.quizes.Quiz;
 import com.example.model.quizes.QuizResult;
 import com.example.model.users.User;
 import com.example.model.users.activities.FriendActivity;
-import com.example.model.users.activities.createdQuiz;
-import com.example.model.users.activities.tookQuiz;
+import com.example.model.users.activities.TookQuiz;
 import com.example.repos.FriendActivityRepo;
 import com.example.repos.QuizRepo;
 import com.example.repos.UserRepo;
@@ -53,7 +52,7 @@ public class QuizService {
         quiz.getHistory().add(result);
         user.getUserHistory().add(result);
 
-        FriendActivity act = new tookQuiz(user.getId(),result.getId(),user.getUsername());
+        FriendActivity act = new TookQuiz(user.getId(),result.getId(),user.getUsername());
         User us = userRepo.findById(quiz.getAuthor().getId()).orElseThrow(()->new RuntimeException("User not found"));
 
         fracRepo.save(act);

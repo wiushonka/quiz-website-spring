@@ -36,7 +36,12 @@ public class HomepageService {
         this.fracRepo = fracRepo;
     }
 
-    public List<Announcement> getAnnouncements() {
+    public List<Announcement> getRecentAnnouncements(Pageable pageable) {
+        LocalDateTime lastTenDays = LocalDateTime.now().minusDays(10);
+        return this.announcementRepo.getRecentAnnouncements(lastTenDays,pageable).getContent();
+    }
+
+    public List<Announcement> getAllAnnouncements() {
         return this.announcementRepo.findAll();
     }
 
