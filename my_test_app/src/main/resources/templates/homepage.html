@@ -273,6 +273,27 @@
             font-size: 0.9rem;
         }
 
+        .admin-button {
+            position: fixed;
+            bottom: 20px;
+            right: 230px;
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.4rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+            z-index: 9999;
+        }
+
+        .admin-button:hover {
+            background-color: #c2185b;
+        }
+
     </style>
 </head>
 <body>
@@ -354,11 +375,10 @@
         </div>
 
         <!-- Always-visible button -->
-        <form th:action="@{/allAnnouncements}" method="get" class="show-all-announcements">
+        <form th:action="@{/allAnnounces}" method="get" class="show-all-announcements">
             <input type="submit" value="Show All Announcements" />
         </form>
     </div>
-
 
     <!-- RIGHT COLUMN: Quizzes -->
     <div class="quizzes">
@@ -407,6 +427,13 @@
 <form th:action="@{/createQuiz}" method="get">
     <button type="submit" class="floating-button">Create New Quiz</button>
 </form>
+
+<!-- Show only if user is admin -->
+<div th:if="${user != null and user.admin}">
+    <form th:action="@{/admin}" method="get">
+        <button type="submit" class="admin-button">Administrator Page</button>
+    </form>
+</div>
 
 <!-- 1) Recent Quiz Results Panel -->
 <div id="results-panel">
@@ -524,6 +551,8 @@
         </ul>
     </div>
 </div>
+
+
 
 
 <script>

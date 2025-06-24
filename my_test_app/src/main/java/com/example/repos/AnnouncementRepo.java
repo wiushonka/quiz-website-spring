@@ -17,5 +17,5 @@ public interface AnnouncementRepo extends JpaRepository<Announcement, Long> {
     List<Announcement> findByAuthor(User author);
 
     @Query("SELECT a FROM Announcement a WHERE a.dateTime > :cutOff ORDER BY a.dateTime DESC")
-    Page<Announcement> getRecentAnnouncements(@Param("cutOff") LocalDateTime cutOff, Pageable pageable);
+    Page<Announcement> getRecentTenDayAnnouncements(@Param("cutOff") LocalDateTime cutOff, Pageable pageable);
 }

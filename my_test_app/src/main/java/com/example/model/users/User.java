@@ -26,7 +26,7 @@ public class User {
 
     @ManyToMany
     private List<User> friends = new ArrayList<>();
-
+                                // TODO : shecvale es ramenairat
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private List<Chat> chats = new ArrayList<>();
 
@@ -35,7 +35,7 @@ public class User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FriendRequest> pendingRequests = new ArrayList<>();
-                                                                            // TODO : can prob change this
+                                                                            // TODO : shecvale es ramenairat
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<QuizResult> userHistory;
 
@@ -64,6 +64,8 @@ public class User {
     public void promote() {
         this.admin = true;
     }
+
+    public boolean isAdmin() { return admin; }
 
     public void demote() {
         this.admin = false;

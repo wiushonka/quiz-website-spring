@@ -1,0 +1,55 @@
+<!-- quizManagerPage.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Quiz Manager</title>
+  <script>
+    function filterQuizzes() {
+      var input = document.getElementById('quizFilter');
+      var filter = input.value.toLowerCase();
+      var rows = document.querySelectorAll('#quizTable tbody tr');
+      rows.forEach(function(row) {
+        var title = row.querySelector('.quizTitle').textContent.toLowerCase();
+        if (title.indexOf(filter) > -1) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+<h1>Manage Quizzes</h1>
+<label>Search by Description:</label>
+<label for="quizFilter"></label><input type="text" id="quizFilter" onkeyup="filterQuizzes()" placeholder="Enter keyword..." />
+<br><br>
+<table id="quizTable" border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Description</th>
+    <th>Type</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="quiz : ${quizzs}">
+    <td th:text="${quiz.id}"></td>
+    <td class="quizTitle" th:text="${quiz.description}"></td>
+    <td th:text="${quiz.type}"></td>
+    <td>
+      <form th:action="@{'/admin/removeQuiz'}" method="post" style="display:inline;">
+        <input type="hidden" name="quizId" th:value="${quiz.id}" />
+        <button type="submit">Remove</button>
+      </form>
+      <form th:action="@{'/admin/clearQuizHistory'}" method="post" style="display:inline;">
+        <input type="hidden" name="quizId" th:value="${quiz.id}" />
+        <button type="submit">Clear History</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!-- adminPage.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+<h1>Welcome Admin</h1>
+<a th:href="@{'/admin/newAnnouncement'}">Create Announcement</a><br>
+<a th:href="@{'/admin/user'}">Manage Users</a><br>
+<a th:href="@{'/admin/quizManager'}">Manage Quizzes</a><br>
+<a th:href="@{'/admin/stats'}">View Stats</a><br>
+</body>
+</html>

@@ -127,7 +127,7 @@ class AdministratorTest {
         }
         System.out.println("======================================================================= \n");
 
-        service.promoteUser(john);
+        service.promoteUser(john.getId());
         service.removeQuiz(q1.getId());
 
         System.out.println("PRINTING STATISTICS LASTLAST ----------------------------------------------");

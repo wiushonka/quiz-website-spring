@@ -1,0 +1,53 @@
+<!-- userManagerPage.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>User Manager</title>
+  <script>
+    function filterUsers() {
+      var input = document.getElementById('userFilter');
+      var filter = input.value.toLowerCase();
+      var rows = document.querySelectorAll('#userTable tbody tr');
+      rows.forEach(function(row) {
+        var username = row.querySelector('.username').textContent.toLowerCase();
+        if (username.indexOf(filter) > -1) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+<h1>Manage Users</h1>
+<label>Search by Username:</label>
+<input type="text" id="userFilter" onkeyup="filterUsers()" placeholder="Enter username..." />
+<br><br>
+<table id="userTable" border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Username</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="user : ${users}">
+    <td th:text="${user.id}"></td>
+    <td class="username" th:text="${user.username}"></td>
+    <td>
+      <form th:action="@{'/admin/removeUser'}" method="post" style="display:inline;">
+        <input type="hidden" name="userId" th:value="${user.id}" />
+        <button type="submit">Remove</button>
+      </form>
+      <form th:action="@{'/admin/promotion'}" method="post" style="display:inline;">
+        <input type="hidden" name="userId" th:value="${user.id}" />
+        <button type="submit">Promote</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

@@ -14,6 +14,7 @@ import java.util.List;
 @Service
 @Transactional
 public class FriendService {
+
     private final UserRepo userRepo;
 
     private final FriendRequestRepo friendRequestRepo;

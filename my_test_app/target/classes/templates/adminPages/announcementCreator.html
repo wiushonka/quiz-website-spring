@@ -1,0 +1,21 @@
+<!-- announcementCreator.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Create Announcement</title>
+</head>
+<body>
+<h1>Create New Announcement</h1>
+<form th:action="@{'/admin/newAnnouncement'}" method="post">
+  <label>Title:</label><br>
+  <label>
+    <input type="text" name="title" required>
+  </label><br>
+  <label>Content:</label><br>
+  <label>
+    <textarea name="content" rows="10" cols="50" required></textarea>
+  </label><br>
+  <button type="submit">Publish</button>
+</form>
+</body>
+</html>

@@ -38,11 +38,7 @@ public class HomepageService {
 
     public List<Announcement> getRecentAnnouncements(Pageable pageable) {
         LocalDateTime lastTenDays = LocalDateTime.now().minusDays(10);
-        return this.announcementRepo.getRecentAnnouncements(lastTenDays,pageable).getContent();
-    }
-
-    public List<Announcement> getAllAnnouncements() {
-        return this.announcementRepo.findAll();
+        return this.announcementRepo.getRecentTenDayAnnouncements(lastTenDays,pageable).getContent();
     }
 
     public List<Quiz> popularQuizs() {
@@ -83,5 +79,10 @@ public class HomepageService {
         }
 
         return friendsRecentActs;
+    }
+
+    public boolean validUser(User user) {
+        List<User> allUser = userRepo.findAll();
+        return !allUser.contains(user);
     }
 }

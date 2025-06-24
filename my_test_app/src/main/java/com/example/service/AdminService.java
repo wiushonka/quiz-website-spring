@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.model.quizes.Quiz;
 import com.example.model.users.User;
 import com.example.model.users.admin.Announcement;
 import com.example.repos.AnnouncementRepo;
@@ -9,8 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-
-// TODO : ================== FINISH METHODS ================================
+import java.util.List;
 
 @Service
 @Transactional
@@ -45,11 +45,9 @@ public class AdminService {
     }
 
 
-    public void promoteUser(User user) {
-        User promotedUser = this.userRepository.findById(user.getId()).orElse(null);
-        if (promotedUser != null) {
-            promotedUser.promote();
-        }
+    public void promoteUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("User Not Found"));
+        user.promote();
     }
 
     public void addAnnouncement(Announcement announcement) {
@@ -60,7 +58,6 @@ public class AdminService {
         announcementRepository.deleteById(announcementId);
     }
 
-    // TODO : =========== probably add some other stats to show too ========
     public HashMap<String,Long> seeStats() {
         HashMap<String,Long> stats = new HashMap<>();
 
@@ -74,5 +71,9 @@ public class AdminService {
         stats.put("totalQuizsTaken", totalQuizsTaken);
 
         return stats;
+    }
+
+    public List<Quiz> getAllQuizzs() {
+        return quizRepository.findAll();
     }
 }

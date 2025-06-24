@@ -33,5 +33,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
     Optional<User> findWithLock(@Param("userId") Long userId);
 
     @Query("SELECT a FROM User u JOIN u.achis a WHERE u.id = :userId")
-    List<Achievements> findUserAchievements(@Param("userId") Long userId, Pageable pageable);
+    Page<Achievements> findUserAchievements(@Param("userId") Long userId, Pageable pageable);
 }

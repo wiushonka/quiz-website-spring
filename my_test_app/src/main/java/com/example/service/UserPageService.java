@@ -39,10 +39,10 @@ public class UserPageService {
     }
 
     public List<Achievements> userAchievements(Long userId) {
-        return userRepo.findUserAchievements(userId, Pageable.unpaged());
+        return userRepo.findUserAchievements(userId, Pageable.unpaged()).getContent();
     }
 
     public List<Achievements> getRecentAchievements(Long userId) {
-        return userRepo.findUserAchievements(userId, PageRequest.of(0, 30));
+        return userRepo.findUserAchievements(userId, PageRequest.of(0, 30)).getContent();
     }
 }

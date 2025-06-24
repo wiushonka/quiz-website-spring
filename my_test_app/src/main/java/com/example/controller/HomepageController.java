@@ -8,6 +8,7 @@ import com.example.service.HomepageService;
 import com.example.service.UserPageService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,28 +33,33 @@ public class HomepageController {
 
     @RequestMapping("/homepage")
     public String displayHomepage(Model model, HttpSession session) {
-        model.addAttribute("announcements",homepageService.getRecentAnnouncements(PageRequest.of(0,30)));
-        model.addAttribute("popularQuizs",homepageService.popularQuizs());
-        model.addAttribute("getRecentQuizs",homepageService.getRecentQuizs());
         User user = (User) session.getAttribute("user");
 
-        if(user == null) {
+        if(user == null || !homepageService.validUser(user)) {
             return "login";
         }
 
-        model.addAttribute("user",user);
-        model.addAttribute("recentQuizTaking",homepageService.getUserRecentQuizTakes(user.getId()));
-        model.addAttribute("recentQuizCreating",homepageService.getRecentQuizCreats(user.getId()));
-        model.addAttribute("recentChallenges", homepageService.getRecentChallenges(user.getId()));
+        try{
+            model.addAttribute("announcements",homepageService.getRecentAnnouncements(PageRequest.of(0,30)));
+            model.addAttribute("popularQuizs",homepageService.popularQuizs());
+            model.addAttribute("getRecentQuizs",homepageService.getRecentQuizs());
 
-        model.addAttribute("acts",homepageService.getRecentFriendActivities(user.getId(),PageRequest.of(0, 30)));
+            model.addAttribute("user",user);
+            model.addAttribute("recentQuizTaking",homepageService.getUserRecentQuizTakes(user.getId()));
+            model.addAttribute("recentQuizCreating",homepageService.getRecentQuizCreats(user.getId()));
+            model.addAttribute("recentChallenges", homepageService.getRecentChallenges(user.getId()));
 
-        model.addAttribute("userAchis",userPageService.getRecentAchievements(user.getId()));
+            model.addAttribute("acts",homepageService.getRecentFriendActivities(user.getId(),PageRequest.of(0, 30)));
 
-        List<FriendRequest> reqs = friendService.getFriendRequests(user.getId());
-        model.addAttribute("friendRequests",reqs);
-        List<User> friends = friendService.getFriendsList(user.getId());
-        model.addAttribute("friends",friends);
+            model.addAttribute("userAchis",userPageService.getRecentAchievements(user.getId()));
+
+            List<FriendRequest> reqs = friendService.getFriendRequests(user.getId());
+            model.addAttribute("friendRequests",reqs);
+            List<User> friends = friendService.getFriendsList(user.getId());
+            model.addAttribute("friends",friends);
+        } catch (Exception e){
+            return "login";
+        }
 
         return "homepage";
     }
@@ -63,9 +69,9 @@ public class HomepageController {
         return "quizCreation";
     }
 
-    @GetMapping("/allAnnouncements")
+    @GetMapping("/allAnnounces")
     public String displayAllAnnouncements(Model model) {
-        List<Announcement> announcements = homepageService.getAllAnnouncements();
+        List<Announcement> announcements = homepageService.getRecentAnnouncements(Pageable.unpaged());
         model.addAttribute("announcements",announcements);
         return "allAnnouncements";
     }
