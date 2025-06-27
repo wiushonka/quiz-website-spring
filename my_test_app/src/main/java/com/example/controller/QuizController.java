@@ -10,6 +10,7 @@ import com.example.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -50,8 +51,54 @@ public class QuizController {
 
             session.setAttribute("correctCnt", correctCnt);
             session.setAttribute("quiz", quiz);
+            Double x = 0D;
+            if(quiz.isQuickResults()) session.setAttribute("resultSoFar", x);
+
             return "redirect:/quiz/" + id + "/practiceMode/question/0";
         }
+    }
+
+    @PostMapping("/quiz/{id}/question/{index}/mulPages")
+    public String mulPageQuestionAnswered(@PathVariable Long id, @PathVariable int index,
+                                          HttpSession session,
+                                          @RequestParam MultiValueMap<String, String> formData,
+                                          @RequestParam("wentForward") boolean forward) {
+        List<String> userAnswers = new ArrayList<>();
+        for (String key : formData.keySet()) {
+            if (key.startsWith("answer_")) {
+                userAnswers.addAll(formData.get(key));
+            }
+        }
+        if (userAnswers.isEmpty()) userAnswers = List.of("");
+        StringBuilder answers = new StringBuilder();
+        for (String userAnswer : userAnswers) {
+            answers.append(userAnswer).append(",");
+        }
+        Quiz quiz = (Quiz) session.getAttribute("quiz");
+        Question question=quiz.getQuestions().get(index);
+        if(!answers.toString().equals(",")) question.setUserAnswer(answers.toString());
+        if(forward) ++index;
+        else --index;
+        return "redirect:/quiz/" + id.toString() + "/question/" + index;
+    }
+
+    @RequestMapping("/quiz/{id}/question/{index}/mulPages/finalResult")
+    public String getMultiplePagesFinalResult(@PathVariable Long id, @PathVariable int index,
+                                              HttpSession session, Model model){
+        long curTime = System.currentTimeMillis();
+        Long startTime = (Long) session.getAttribute("startTime");
+        long elapsedTime = ((curTime - startTime) / 1000L);
+
+        Quiz quiz = (Quiz) session.getAttribute("quiz");
+        User user = (User) session.getAttribute("user");
+
+        double score = quizService.calculateScore(quiz);
+        QuizResult result = new QuizResult(elapsedTime, score, quiz, user);
+
+        quizService.addNewResult(elapsedTime,score,quiz.getId(),user.getId());
+
+        model.addAttribute("quizResult", result);
+        return "resultpage";
     }
 
     @RequestMapping("/quiz/{id}/question/{index}")
@@ -70,8 +117,49 @@ public class QuizController {
         model.addAttribute("index", index);
         model.addAttribute("hasNext", index < questions.size() - 1);
         model.addAttribute("hasPrevious", index > 0);
-
         return "displayQuestion";
+    }
+
+    @RequestMapping("/quiz/{id}/question/{index}/immidiateResult")
+    public String showImmediateResult(@PathVariable Long id, @PathVariable Integer index, Model model,
+                                      @RequestParam MultiValueMap<String, String> formData,
+                                      HttpSession session) {
+
+        List<String> userAnswers = new ArrayList<>();
+        for (String key : formData.keySet()) {
+            if (key.startsWith("answer_")) {
+                userAnswers.addAll(formData.get(key));
+            }
+        }
+        if (userAnswers.isEmpty()) userAnswers = List.of("");
+
+        Quiz quiz = (Quiz) session.getAttribute("quiz");
+        List<Question> questions = quiz.getQuestions();
+
+        if(index<0 || index>=questions.size()) throw new RuntimeException("CAN NOT CALCULATE ANSWER FOR QUESTION INDEX : -1");
+
+        Question question=questions.get(index);
+        StringBuilder answer = new StringBuilder();
+        for(String answ : userAnswers){
+            answer.append(answ).append(",");
+        }
+        question.setUserAnswer(answer.toString());
+
+        Double x = (Double) session.getAttribute("resultSoFar");
+        if (x==null) x=0D;
+        session.setAttribute("resultSoFar", x);
+        double y = question.getResult();
+        session.setAttribute("resultSoFar",x+y);
+
+        model.addAttribute("questionText",question.getQuestion());
+        model.addAttribute("correctAnswer",question.getCorrectAnswers());
+        model.addAttribute("wasUserCorrect",y>0);
+        model.addAttribute("quiz",quiz);
+        model.addAttribute("index",index);
+        model.addAttribute("hasNext", index < questions.size() - 1);
+        model.addAttribute("resultSoFar",x+y);
+
+        return "quickResults/displayImmidateResult";
     }
 
     @RequestMapping("/quiz/startQuiz/{id}")
@@ -113,6 +201,24 @@ public class QuizController {
         model.addAttribute("stats",quizService.getStats(id));
 
         return "quizStartPage";
+    }
+
+    @PostMapping("/quiz/{id}/immidiateResults/lastResult")
+    public String lastImmidiateResult(@PathVariable Long id,HttpSession session, Model model) {
+        Double score = (Double) session.getAttribute("resultSoFar");
+        long curTime = System.currentTimeMillis();
+        Long startTime = (Long) session.getAttribute("startTime");
+        long elapsedTime = ((curTime - startTime) / 1000L);
+
+        Quiz quiz = (Quiz) session.getAttribute("quiz");
+        User user = (User) session.getAttribute("user");
+
+        QuizResult result = new QuizResult(elapsedTime, score, quiz, user);
+
+        quizService.addNewResult(elapsedTime,score,quiz.getId(),user.getId());
+
+        model.addAttribute("quizResult", result);
+        return "resultpage";
     }
 
     @PostMapping("/quiz/{id}/calculateResult")

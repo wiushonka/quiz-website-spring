@@ -5,7 +5,7 @@ import jakarta.persistence.Transient;
 
 import java.util.List;
 
-// TODO : es qliavoba gasasworebelia tavidan bolomde
+// TODO : es qliavoba gasasworebelia tavidan bolomde xelaxlaa dasaweri
 
 @Entity
 public class FillBlankQuestion extends Question {

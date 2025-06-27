@@ -63,13 +63,6 @@ public class QuizCreationController {
         return "quizEditor/editQuiz";
     }
 
-    private String trimBrackets(String input) {
-        if (input != null && input.startsWith("[") && input.endsWith("]") && input.length() > 1) {
-            return input.substring(1, input.length() - 1).trim();
-        }
-        return input;
-    }
-
     @PostMapping("/editQuiz/{id}/question/{index}")
     public String editQuiz(@PathVariable Long id,
                            @PathVariable int index,
@@ -82,11 +75,11 @@ public class QuizCreationController {
                            @RequestParam(value = "ordered", required = false, defaultValue = "false") boolean order,
                            Model model) {
 
-        question = trimBrackets(question);
-        questionType = trimBrackets(questionType);
-        answer = trimBrackets(answer);
-        posAnswers = trimBrackets(posAnswers);
-        category = trimBrackets(category);
+        question = quizService.trimBrackets(question);
+        questionType = quizService.trimBrackets(questionType);
+        answer = quizService.trimBrackets(answer);
+        posAnswers = quizService.trimBrackets(posAnswers);
+        category = quizService.trimBrackets(category);
 
         Quiz quiz = quizService.getQuizById(id);
         Question q;

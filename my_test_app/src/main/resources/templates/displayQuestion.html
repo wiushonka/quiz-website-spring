@@ -6,11 +6,10 @@
 </head>
 <body>
 
-
-
-
-<!-- everything that belongs in the POST must live inside this form -->
-<form th:action="@{/quiz/{id}/calculateResult(id=${quiz.id})}" method="post">
+<!-- QUICK RESULTS: Submit immediately -->
+<form th:if="${quiz.quickResults}"
+      th:action="@{/quiz/{id}/question/{index}/immidiateResult(id=${quiz.id}, index=${index})}"
+      method="post">
 
     <p th:text="'Quiz ID: ' + ${quiz.id}"></p>
 
@@ -24,20 +23,61 @@
     <!-- question number -->
     <p th:text="'Question ' + (${index} + 1)"></p>
 
-    <!-- your actual inputs -->
+    <!-- actual inputs -->
     <div th:replace="~{fragments :: questionOptions(${question})}"></div>
 
-    <!-- navigation -->
-    <div th:replace="~{fragments :: pager(
-        ${quiz},
-        ${index},
-        ${hasPrevious},
-        ${hasNext}
+    <!-- only Submit Answer for immediate result -->
+    <button type="submit">Submit Answer</button>
+</form>
+
+<!-- MULTI-PAGE MODE WITHOUT QUICK RESULTS -->
+<form th:if="${!quiz.quickResults}"
+      th:action="@{/quiz/{id}/question/{index}/mulPages(id=${quiz.id}, index=${index})}"
+      method="post">
+
+    <p th:text="'Quiz ID: ' + ${quiz.id}"></p>
+
+    <!-- quiz header -->
+    <div th:replace="~{fragments :: quizHeader(
+        ${quiz.description},
+        ${quiz.type},
+        ${quiz.author != null ? quiz.author.username : 'Unknown'}
     )}"></div>
 
-    <!-- submit -->
-    <button type="submit">Submit Quiz</button>
+    <!-- question number -->
+    <p th:text="'Question ' + (${index} + 1)"></p>
+
+    <!-- actual inputs -->
+    <div th:replace="~{fragments :: questionOptions(${question})}"></div>
+
+    <!-- hidden flag: true = Next, false = Previous -->
+    <input type="hidden" name="wentForward" id="wentForward" value="true"/>
+
+    <div>
+        <!-- Previous button -->
+        <button th:if="${hasPrevious}"
+                type="submit"
+                onclick="document.getElementById('wentForward').value='false'">
+            Previous
+        </button>
+
+        <!-- Next button -->
+        <button th:if="${hasNext}"
+                type="submit"
+                onclick="document.getElementById('wentForward').value='true'">
+            Next
+        </button>
+
+        <!-- Submit Quiz on last page -->
+        <button th:if="${!hasNext}"
+                type="submit"
+                th:formaction="@{/quiz/{id}/question/{index}/mulPages/finalResult(
+                                    id=${quiz.id}, index=${index})}">
+            Submit Quiz
+        </button>
+    </div>
 </form>
+
 
 </body>
 </html>
