@@ -11,8 +11,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,19 +29,29 @@ public class QuizController {
     }
 
     @RequestMapping("/quiz/{id}")
-    public String quiz(@PathVariable Long id, Model model, HttpSession session) {
-        Quiz quiz = quizService.getQuizById(id);
-        model.addAttribute("quiz", quizService.getQuizById(id));
+    public String quiz(@PathVariable Long id, Model model, HttpSession session,
+                       @RequestParam(value = "practiceMode", required = false) Boolean practiceMode) {
+        if(practiceMode==null || !practiceMode){
+            model.addAttribute("quiz", quizService.getQuizById(id));
+            Quiz quiz = quizService.getQuizById(id);
+            session.setAttribute("startTime", System.currentTimeMillis());
+            session.setAttribute("quiz", quiz);
 
-        session.setAttribute("startTime", System.currentTimeMillis());
-        session.setAttribute("quiz", quiz);
+            if (quiz != null && quiz.isMulPages()) {
+                return "redirect:/quiz/" + id.toString() + "/question/" + "0";
+            }else if(quiz != null && !quiz.isMulPages()){
+                return "displayQuizSinglePage";
+            }
+            return "quizNotFound";
+        }else{
+            Quiz quiz = quizService.getQuizById(id);
+            ArrayList<Integer> correctCnt = new ArrayList<>(quiz.getQuestions().size());
+            for (int i = 0; i < quiz.getQuestions().size(); ++i) correctCnt.add(0);
 
-        if (quiz != null && quiz.isMulPages()) {
-            return "redirect:/quiz/" + id.toString() + "/question/" + "0";
-        }else if(quiz != null && !quiz.isMulPages()){
-            return "displayQuizSinglePage";
+            session.setAttribute("correctCnt", correctCnt);
+            session.setAttribute("quiz", quiz);
+            return "redirect:/quiz/" + id + "/practiceMode/question/0";
         }
-        return "quizNotFound";
     }
 
     @RequestMapping("/quiz/{id}/question/{index}")
@@ -67,9 +78,11 @@ public class QuizController {
     public String startQuiz(@PathVariable Long id,
                             Model model,
                             HttpSession session,
-                            @ModelAttribute("dto") ChallengeAcceptanceDTO dto) {
+                            @ModelAttribute("dto") ChallengeAcceptanceDTO dto,
+                            @RequestParam(value = "orderBy", required = false) String orderBy) {
+
         model.addAttribute("quiz", quizService.getQuizById(id));
-        if((User)session.getAttribute("user") == null) {
+        if(session.getAttribute("user") == null) {
             return "redirect:/login";
         }
         User user = (User) session.getAttribute("user");
@@ -81,6 +94,23 @@ public class QuizController {
         }else {
             model.addAttribute("dto", null);
         }
+        List<QuizResult> pastPerformance=quizService.getUserPastPerformance(user.getId(),id);
+        if(orderBy!=null){
+            switch(orderBy){
+                case "date": pastPerformance.sort(Comparator.comparing(QuizResult::getResultDate).reversed());
+                    break;
+                case "score": pastPerformance.sort(Comparator.comparingDouble(QuizResult::getPoints).reversed());
+                    break;
+                case "time": pastPerformance.sort(Comparator.comparingLong(QuizResult::getTime));
+                    break;
+            }
+        }
+
+        model.addAttribute("userPastPerformance",pastPerformance);
+        model.addAttribute("allTimeLeaderboard",quizService.getAllTimeLeaderboard(id));
+        model.addAttribute("lastDayLeaderboard",quizService.getLastDayLb(id));
+        model.addAttribute("recentHistory",quizService.getRecentHistory(id));
+        model.addAttribute("stats",quizService.getStats(id));
 
         return "quizStartPage";
     }

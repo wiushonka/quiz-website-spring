@@ -3,11 +3,11 @@ package com.example.model.users.activities;
 import jakarta.persistence.Entity;
 
 @Entity
-public class TookQuiz extends FriendActivity{
+public class QuizTaken extends FriendActivity{
 
-    public TookQuiz() {}
+    public QuizTaken() {}
 
-    public TookQuiz(Long userId, Long quizResultId, String username) {
+    public QuizTaken(Long userId, Long quizResultId, String username) {
         super(userId,null,quizResultId,null,username);
     }
 

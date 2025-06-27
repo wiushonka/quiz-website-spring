@@ -46,6 +46,11 @@ public class ResponseQuestion extends Question{
     public void setCategory(String category) { this.category = category; }
 
     @Override
+    public int getMaxPoints() {
+        return this.maxPoints;
+    }
+
+    @Override
     public String getQuestion() {
         return this.question;
     }
@@ -101,6 +106,10 @@ public class ResponseQuestion extends Question{
     @Override
     public String getUserAnswer() {
         return this.userAnswer;
+    }
+
+    public boolean isAnswerOrdered() {
+        return this.answerOrdered;
     }
 
     @Override

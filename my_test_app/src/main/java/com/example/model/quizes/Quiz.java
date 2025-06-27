@@ -143,10 +143,4 @@ public class Quiz {
     public boolean isQuickResults() {
         return quickResults;
     }
-
-    // TODO : ================== IMPLEMENT METHODS ======================
-    public List<QuizResult> getLeaderboard() {
-        return null;
-    }
-
 }

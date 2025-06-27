@@ -1,6 +1,7 @@
 package com.example.repos;
 
 import com.example.model.quizes.Quiz;
+import com.example.model.quizes.QuizResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

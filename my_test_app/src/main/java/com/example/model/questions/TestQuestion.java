@@ -45,6 +45,11 @@ public class TestQuestion extends Question {
     }
 
     @Override
+    public int getMaxPoints() {
+        return maxPoints;
+    }
+
+    @Override
     public String getQuestion() {
         return this.question;
     }

@@ -1,10 +1,11 @@
 package com.example.model.questions;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 
 import java.util.List;
+
+// TODO : es qliavoba gasasworebelia tavidan bolomde
 
 @Entity
 public class FillBlankQuestion extends Question {
@@ -17,9 +18,11 @@ public class FillBlankQuestion extends Question {
 
     private String category;
 
+    private int maxPoints;
+
     public FillBlankQuestion() {}
 
-    public FillBlankQuestion(String question, String category, String correctAnswer) {
+    public FillBlankQuestion(String question, String category, String correctAnswer, int maxPoints) {
         this.question = question;
         this.category = category;
         this.correctAnswer = correctAnswer;
@@ -65,5 +68,10 @@ public class FillBlankQuestion extends Question {
     @Override
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    @Override
+    public int getMaxPoints() {
+        return maxPoints;
     }
 }

@@ -8,18 +8,21 @@
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
       margin: 0;
-      padding: 0;
+      padding: 2rem 0;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
     }
 
     .layout {
       display: flex;
-      width: 90%;
-      max-width: 1000px;
-      margin-top: 2rem;
       gap: 2rem;
     }
 
@@ -27,16 +30,15 @@
       background-color: #fff;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 1.5rem;
     }
 
     .left-panel {
       width: 40%;
-      padding: 1.5rem;
     }
 
     .right-panel {
       width: 60%;
-      padding: 2rem;
       text-align: center;
     }
 
@@ -113,84 +115,171 @@
       max-width: 120px;
     }
 
-    .challenge-info {
-      margin-top: 2rem;
-      border-top: 1px solid #ccc;
-      padding-top: 1rem;
+    .section {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      overflow-y: auto;
+      max-height: 300px;
     }
 
-    .author-info {
-      margin-top: 2rem;
-      border-top: 1px solid #ccc;
-      padding-top: 1rem;
-      text-align: left;
+    .section ul {
+      padding-left: 1.5rem;
     }
 
     .author-info form {
       display: inline-block;
       margin-right: 0.5rem;
     }
+
+    .section h3 {
+      margin-top: 0;
+    }
   </style>
 </head>
 <body>
 
-<div class="layout">
-  <!-- Left Panel -->
-  <div class="left-panel">
-    <h3>Your Friends</h3>
-    <div th:if="${#lists.isEmpty(friends)}">
-      <p>You have no friends yet.</p>
+<div class="container">
+
+  <!-- Quiz Layout -->
+  <div class="layout">
+
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <h3>Your Friends</h3>
+      <div th:if="${#lists.isEmpty(friends)}">
+        <p>You have no friends yet.</p>
+      </div>
+      <div th:unless="${#lists.isEmpty(friends)}" class="friend-scroll">
+        <ul class="friend-ul">
+          <li th:each="friend : ${friends}">
+            <span class="friend-name" th:text="${friend.username}">Friend</span>
+            <form th:action="@{/sendChallenge}" method="post">
+              <input type="hidden" name="recieverId" th:value="${friend.id}" />
+              <input type="hidden" name="quizId" th:value="${quiz.id}" />
+              <button type="submit" class="btn friend-btn small-btn">Challenge</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Challenger's Best Score -->
+      <div th:if="${dto != null}" class="challenge-info">
+        <h3>Challenger's Best Score</h3>
+        <p><strong>Time:</strong> <span th:text="${dto.quizResult.time}">0</span> seconds</p>
+        <p><strong>Points:</strong> <span th:text="${dto.quizResult.points}">0.0</span></p>
+        <p><strong>Date:</strong> <span th:text="${dto.quizResult.resultDate}">N/A</span></p>
+      </div>
     </div>
-    <div th:unless="${#lists.isEmpty(friends)}" class="friend-scroll">
-      <ul class="friend-ul">
-        <li th:each="friend : ${friends}">
-          <span class="friend-name" th:text="${friend.username}">Friend</span>
-          <form th:action="@{/sendChallenge}" method="post" style="margin: 0;">
-            <input type="hidden" name="recieverId" th:value="${friend.id}" />
-            <input type="hidden" name="quizId"     th:value="${quiz.id}"   />
-            <button type="submit" class="btn friend-btn small-btn">
-              Challenge
-            </button>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <h1 th:text="${quiz.description}">Quiz Title</h1>
+      <p class="description" th:text="'Type: ' + ${quiz.type}">Quiz type</p>
+
+      <form th:action="@{/quiz/{id}(id=${quiz.id})}" method="get">
+        <div style="margin-bottom: 1rem;">
+          <input type="checkbox" id="practiceMode" name="practiceMode" value="true" class="small-btn"/>
+          <label for="practiceMode">Practice Mode</label>
+        </div>
+        <button type="submit" class="btn start-btn">Start Quiz</button>
+      </form>
+
+      <form th:action="@{/homepage}" method="get">
+        <button type="submit" class="btn back-btn">Back to Homepage</button>
+      </form>
+
+      <div class="author-info">
+        <h3>Author Info</h3>
+        <div th:if="${quiz.author.id == user.id}">
+          <form th:action="@{/editQuiz/{id}/question/{index}(id=${quiz.id}, index=0)}" method="get">
+            <button type="submit" class="btn small-btn">Edit Quiz</button>
           </form>
+        </div>
+        <div th:unless="${quiz.author.id == user.id}">
+          <p th:text="'Username: ' + ${quiz.author.username}">Author Username</p>
+          <form th:action="@{/user/{userId}(userId=${quiz.author.id})}" method="get">
+            <button type="submit" class="btn small-btn">See User Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- End of layout -->
+
+  <!-- Additional Sections -->
+  <div class="section">
+    <h3>Your Past Performance</h3>
+    <div th:if="${userPastPerformance != null and !#lists.isEmpty(userPastPerformance)}">
+      <ul>
+        <li th:each="result : ${userPastPerformance}">
+          <span th:text="'Date: ' + ${result.resultDate} + ', Score: ' + ${result.points} + ', Time: ' + ${result.time} + 's'">Result</span>
         </li>
       </ul>
     </div>
-
-    <!-- Challenger's Best Score (if present) -->
-    <div th:if="${dto != null}" class="challenge-info">
-      <h3>Challenger's Best Score</h3>
-      <p><strong>Time:</strong>   <span th:text="${dto.quizResult.time}">0</span> seconds</p>
-      <p><strong>Points:</strong> <span th:text="${dto.quizResult.points}">0.0</span></p>
-      <p><strong>Date:</strong>   <span th:text="${dto.quizResult.resultDate}">N/A</span></p>
+    <div th:unless="${userPastPerformance != null and !#lists.isEmpty(userPastPerformance)}">
+      <p>No past performance data available.</p>
     </div>
   </div>
 
-  <!-- Right Panel -->
-  <div class="right-panel">
-    <h1 th:text="${quiz.description}">Quiz Title</h1>
-    <p class="description" th:text="'Type: ' + ${quiz.type}">Quiz type</p>
-
-    <form th:action="@{/quiz/{id}(id=${quiz.id})}" method="get">
-      <button type="submit" class="btn start-btn">Start Quiz</button>
-    </form>
-    <form th:action="@{/homepage}" method="get">
-      <button type="submit" class="btn back-btn">Back to Homepage</button>
-    </form>
-
-    <div class="author-info">
-      <h3>Author Info</h3>
-      <p th:text="'Username: ' + ${quiz.author.username}">Author Username</p>
-
-      <!-- SEE USER PROFILE -->
-      <form th:action="@{/user/{userId}(userId=${quiz.author.id})}"
-            method="get">
-        <button type="submit" class="btn small-btn">
-          See User Profile
-        </button>
-      </form>
+  <div class="section">
+    <h3>All-Time Leaderboard</h3>
+    <div th:if="${allTimeLeaderboard != null and !#lists.isEmpty(allTimeLeaderboard)}">
+      <ul>
+        <li th:each="entry : ${allTimeLeaderboard}">
+          <span th:text="${entry.user.username} + ': ' + ${entry.points} + ' pts'">Entry</span>
+        </li>
+      </ul>
+    </div>
+    <div th:unless="${allTimeLeaderboard != null and !#lists.isEmpty(allTimeLeaderboard)}">
+      <p>No leaderboard data available.</p>
     </div>
   </div>
-</div>
+
+  <div class="section">
+    <h3>Last 24h Leaderboard</h3>
+    <div th:if="${lastDayLeaderboard != null and !#lists.isEmpty(lastDayLeaderboard)}">
+      <ul>
+        <li th:each="entry : ${lastDayLeaderboard}">
+          <span th:text="${entry.user.username} + ': ' + ${entry.points} + ' pts'">Entry</span>
+        </li>
+      </ul>
+    </div>
+    <div th:unless="${lastDayLeaderboard != null and !#lists.isEmpty(lastDayLeaderboard)}">
+      <p>No recent leaderboard activity.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Recent Quiz History</h3>
+    <div th:if="${recentHistory != null and !#lists.isEmpty(recentHistory)}">
+      <ul>
+        <li th:each="entry : ${recentHistory}">
+          <span th:text="${entry.user.username} + ' scored ' + ${entry.points} + ' pts on ' + ${entry.resultDate}">History</span>
+        </li>
+      </ul>
+    </div>
+    <div th:unless="${recentHistory != null and !#lists.isEmpty(recentHistory)}">
+      <p>No recent quiz history.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Quiz Stats</h3>
+    <div th:if="${stats != null}">
+      <p><strong>Average Score:</strong> <span th:text="${stats.avgScore}">0.0</span></p>
+      <p><strong>Max Score:</strong> <span th:text="${stats.maxScore}">0.0</span></p>
+      <p><strong>Min Score:</strong> <span th:text="${stats.minScore}">0.0</span></p>
+      <p><strong>Average Time:</strong> <span th:text="${stats.avgTime}">0</span> seconds</p>
+      <p><strong>User Count:</strong> <span th:text="${stats.userCnt}">0</span></p>
+    </div>
+    <div th:unless="${stats != null}">
+      <p>No stats available for this quiz.</p>
+    </div>
+  </div>
+
+</div> <!-- end container -->
 
 </body>
 </html>

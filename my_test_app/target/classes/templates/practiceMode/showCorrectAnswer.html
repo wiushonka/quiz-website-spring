@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Correct Answer</title>
+</head>
+<body>
+
+<h2>Question Feedback</h2>
+
+<div th:replace="fragments :: questionOptions(${question})"></div>
+
+<p><strong>Your Answer:</strong> <span th:text="${question.userAnswer}"></span></p>
+
+<p><strong>Correct Answer(s):</strong></p>
+<ul>
+    <li th:each="ans : ${correctAnswer}" th:text="${ans}"></li>
+</ul>
+
+<div>
+    <!-- Show next question if there's one -->
+    <form th:if="${hasNext}" th:action="@{|/quiz/${quizId}/practiceMode/question/${index + 1}|}" method="get">
+        <button type="submit">Next Question</button>
+    </form>
+
+    <!-- Show finish if it's the end -->
+    <form th:if="${!hasNext}" th:action="@{|/quiz/${quizId}/practiceMode/question/${index}|}" method="get">
+        <button type="submit">Finish Practice</button>
+    </form>
+</div>
+
+</body>
+</html>
