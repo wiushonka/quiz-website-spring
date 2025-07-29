@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Immediate Result</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .result-card {
+      background: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin: 15px 0;
+    }
+
+    strong {
+      color: #444;
+    }
+
+    span {
+      font-weight: bold;
+      color: #5b86e5;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 12px 20px;
+      background-color: #5b86e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4a6fb3;
+    }
+
+    form {
+      display: inline-block;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="result-card">
+  <h2>Immediate Feedback</h2>
+
+  <p><strong>Question:</strong> <span th:text="${questionText}">Question Text</span></p>
+  <p><strong>Correct Answer:</strong> <span th:text="${correctAnswer}">Correct Answer</span></p>
+  <p><strong>Your Answer Was:</strong>
+    <span th:text="${wasUserCorrect} ? 'Correct ✅' : 'Incorrect ❌'">Answer Status</span>
+  </p>
+  <p><strong>Score So Far:</strong> <span th:text="${resultSoFar}">0</span></p>
+
+  <!-- NEXT QUESTION if available -->
+  <form th:if="${hasNext}" th:action="@{/quiz/{id}/question/{index}(id=${quiz.id}, index=${index + 1})}" method="get">
+    <button type="submit">Next Question</button>
+  </form>
+
+  <!-- FINISH if last question -->
+  <form th:if="${!hasNext}" th:action="@{/quiz/{id}/immidiateResults/lastResult(id=${quiz.id})}" method="post">
+    <button type="submit">Finish Quiz</button>
+  </form>
+</div>
+
+</body>
+</html>

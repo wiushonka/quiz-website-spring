@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Manager</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .quiz-manager-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .admin-button {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background-color: #5b86e5;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .admin-button:hover {
+      background-color: #4a6fb3;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #5b86e5;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    button {
+      padding: 8px 12px;
+      background-color: #5b86e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4a6fb3;
+    }
+
+    form {
+      display: inline;
+    }
+  </style>
+  <script>
+    function filterQuizzes() {
+      var input = document.getElementById('quizFilter');
+      var filter = input.value.toLowerCase();
+      var rows = document.querySelectorAll('#quizTable tbody tr');
+      rows.forEach(function (row) {
+        var title = row.querySelector('.quizTitle').textContent.toLowerCase();
+        if (title.indexOf(filter) > -1) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+<div class="quiz-manager-container">
+  <a th:href="@{/admin}" class="admin-button">← Back to Admin Page</a>
+  <h1>Manage Quizzes</h1>
+  <input type="text" id="quizFilter" onkeyup="filterQuizzes()" placeholder="Search by Description..." />
+
+  <table id="quizTable">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Description</th>
+      <th>Type</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="quiz : ${quizzs}">
+      <td th:text="${quiz.id}"></td>
+      <td class="quizTitle" th:text="${quiz.description}"></td>
+      <td th:text="${quiz.type}"></td>
+      <td>
+        <form th:action="@{'/admin/removeQuiz'}" method="post">
+          <input type="hidden" name="quizId" th:value="${quiz.id}" />
+          <button type="submit">Remove</button>
+        </form>
+        <form th:action="@{'/admin/clearQuizHistory'}" method="post">
+          <input type="hidden" name="quizId" th:value="${quiz.id}" />
+          <button type="submit">Clear History</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

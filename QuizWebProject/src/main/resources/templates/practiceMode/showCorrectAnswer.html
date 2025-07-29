@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Correct Answer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Question Feedback</h2>
+
+    <div th:replace="fragments :: questionOptions(${question})"></div>
+
+    <p><strong>Your Answer:</strong> <span th:text="${question.userAnswer}"></span></p>
+
+    <p><strong>Correct Answer(s):</strong></p>
+    <ul>
+        <li th:each="ans : ${correctAnswer}" th:text="${ans}"></li>
+    </ul>
+
+    <div>
+        <form th:if="${hasNext}" th:action="@{|/quiz/${quizId}/practiceMode/question/${index + 1}|}" method="get" style="display:inline;">
+            <button type="submit">Next Question</button>
+        </form>
+
+        <form th:if="${!hasNext}" th:action="@{|/quiz/${quizId}/practiceMode/question/${index}|}" method="get" style="display:inline;">
+            <button type="submit">Finish Practice</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

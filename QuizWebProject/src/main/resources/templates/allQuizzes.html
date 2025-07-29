@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Quizzes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quiz-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .quiz-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .quiz-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .quiz-meta {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .quiz-meta span {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<h1>Available Quizzes</h1>
+<div class="quiz-list">
+    <a th:each="quiz : ${quizzs}"
+       th:href="@{/quiz/startQuiz/{id}(id=${quiz.id})}"
+       class="quiz-card">
+        <div class="quiz-title" th:text="${quiz.description}">Quiz Description</div>
+        <div class="quiz-meta">
+            <span th:text="'Type: ' + ${quiz.type}">Type</span>
+            <span th:text="'Questions: ' + ${quiz.questions.size()}">Questions Count</span>
+            <span th:text="'Created on: ' + ${#temporals.format(quiz.creationDate, 'dd MMM yyyy HH:mm')}">Creation Date</span>
+            <span th:text="'Author: ' + ${quiz.author.username}">Author</span>
+        </div>
+    </a>
+</div>
+
+<form th:action="@{/homepage}" method="get">
+    <button type="submit" class="Back">Back</button>
+</form>
+
+</body>
+</html>

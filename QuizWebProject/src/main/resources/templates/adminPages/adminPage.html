@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .admin-container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .admin-links {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .admin-links a {
+      padding: 12px;
+      background-color: #5b86e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .admin-links a:hover {
+      background-color: #4a6fb3;
+    }
+  </style>
+</head>
+<body>
+<div class="admin-container">
+  <h1>Welcome Admin</h1>
+  <div class="admin-links">
+    <a th:href="@{'/admin/newAnnouncement'}">Create Announcement</a>
+    <a th:href="@{'/admin/user'}">Manage Users</a>
+    <a th:href="@{'/admin/quizManager'}">Manage Quizzes</a>
+    <a th:href="@{'/admin/stats'}">View Stats</a>
+    <a th:href="@{'/homepage'}">Go to Homepage</a>
+  </div>
+</div>
+</body>
+</html>

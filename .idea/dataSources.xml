@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="testdb" uuid="0f85975e-3f78-4fd8-b42f-b9fe1985cc8e">
+    <data-source source="LOCAL" name="testdb" uuid="ed40b277-b0df-461c-8d8b-92a884241fb0">
       <driver-ref>h2.unified</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
-      <remarks>$PROJECT_DIR$/my_test_app/src/main/resources/application.properties</remarks>
       <jdbc-driver>org.h2.Driver</jdbc-driver>
       <jdbc-url>jdbc:h2:mem:testdb</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port" />
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.resource.type" value="Deployment" />
+        <property name="com.intellij.clouds.kubernetes.db.container.port" />
+      </jdbc-additional-properties>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="myQuizDb@localhost" uuid="04571332-fc71-411a-8959-9615ed048e38">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/myQuizDb?useSSL=false&amp;serverTimezone=UTC</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />

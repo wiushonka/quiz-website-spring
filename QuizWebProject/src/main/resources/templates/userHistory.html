@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Quiz History</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { background: #f2f2f2; padding: 10px; margin: 10px 0; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<h1>Quiz History</h1>
+
+<div th:if="${hist == null or #lists.isEmpty(hist)}">
+    No quiz history available.
+</div>
+
+<div th:if="${hist != null and !#lists.isEmpty(hist)}">
+    <div th:each="qr : ${hist}" class="result">
+        <p th:text="'Quiz: ' + ${qr.quiz.description}">Quiz Title</p>
+        <p th:text="'Score: ' + ${qr.points}">Score</p>
+        <p th:text="'Date: ' + ${#temporals.format(qr.resultDate, 'yyyy-MM-dd HH:mm')}">Date</p>
+    </div>
+</div>
+
+<div th:if="${hist != null and !#lists.isEmpty(hist) == false}">
+    <a th:href="@{/homepage}">
+        <button>Back to Homepage</button>
+    </a>
+</div>
+
+</body>
+</html>

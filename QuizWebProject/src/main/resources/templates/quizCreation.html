@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Create Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #34495e;
+        }
+
+        label {
+            display: block;
+            margin: 1rem 0 0.5rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        button[type="submit"] {
+            margin-top: 1.5rem;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Create New Quiz</h2>
+
+<form th:action="@{/quizCreation/addNewQuiz}" th:method="post">
+    <h3>Quiz Settings</h3>
+
+    <!-- Checkboxes -->
+    <label>
+        <input type="checkbox" name="randomize" />
+        Randomize Questions
+    </label>
+
+    <label>
+        <input type="checkbox" name="quickResults" />
+        Show Quick Results
+    </label>
+
+    <label>
+        <input type="checkbox" name="mulPages" />
+        Multiple Pages
+    </label>
+
+    <!-- Description -->
+    <label for="description">Quiz Description:</label>
+    <input type="text" id="description" name="description"
+           placeholder="Enter description..." required />
+
+    <!-- Type -->
+    <label for="type">Quiz Type:</label>
+    <input type="text" id="type" name="type"
+           placeholder="Enter type..." required />
+
+    <!-- Submit -->
+    <button type="submit">Create New Quiz</button>
+</form>
+
+</body>
+</html>

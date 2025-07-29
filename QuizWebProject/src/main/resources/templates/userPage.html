@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+        .container {
+            max-width: 800px; margin: 0 auto;
+            background: #fff; padding: 20px;
+            border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 { margin-top: 0; }
+        .achievements, .buttons, .friend-section { margin-top: 20px; }
+        .achievement {
+            background: #e8f0fe; padding: 10px;
+            margin: 5px 0; border-radius: 6px;
+        }
+        .btn {
+            padding: 0.7rem 1.2rem; font-size: 1rem;
+            border: none; border-radius: 5px; cursor: pointer;
+            margin-right: 8px;
+        }
+        .back-btn { background: #6c757d; color: #fff; }
+        .friend-btn { background: #007bff; color: #fff; }
+        .status-message { font-weight: bold; margin-top: 1rem; }
+        .status-success { color: green; }
+        .status-warning { color: orange; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1 th:text="'User Page: ' + ${user.username}">User Page</h1>
+
+    <section class="achievements">
+        <h2>Achievements</h2>
+        <div th:if="${#lists.isEmpty(achis)}">No achievements yet.</div>
+        <div th:each="achi : ${achis}" class="achievement">
+            <p th:text="${achi.name}">Achievement Title</p>
+        </div>
+    </section>
+
+    <section th:if="${user.id != sessionUser.id}">
+        <div th:switch="${newFriendRequestSent}">
+            <!-- Case: newFriendRequestSent is null -->
+            <div th:case="null">
+                <form th:action="@{/friend/send}" method="post">
+                    <input type="hidden" name="receiverId" th:value="${user.id}" />
+                    <button type="submit" class="btn friend-btn">Send Friend Request</button>
+                </form>
+            </div>
+            <!-- Case: newFriendRequestSent is true -->
+            <div th:case="true">
+                <p class="status-message status-success">Friend request sent!</p>
+            </div>
+            <!-- Case: newFriendRequestSent is false -->
+            <div th:case="false">
+                <p class="status-message status-warning">You are already friends or friend request is pending.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation buttons -->
+    <div class="buttons">
+        <a th:href="@{/user/{userId}/history(userId=${user.id})}">
+            <button class="btn">View Quiz History</button>
+        </a>
+        <a th:href="@{/user/{userId}/quizs(userId=${user.id})}">
+            <button class="btn">View Created Quizzes</button>
+        </a>
+        <a th:href="@{/homepage}">
+            <button class="btn back-btn">Back to Homepage</button>
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

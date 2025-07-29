@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Announcement</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .announcement-container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .admin-button {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background-color: #5b86e5;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .admin-button:hover {
+      background-color: #4a6fb3;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 25px;
+      background-color: #5b86e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4a6fb3;
+    }
+  </style>
+</head>
+<body>
+<div class="announcement-container">
+  <a th:href="@{/admin}" class="admin-button">← Back to Admin Page</a>
+  <h1>Create New Announcement</h1>
+  <form th:action="@{'/admin/newAnnouncement'}" method="post">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="content">Content:</label>
+    <textarea id="content" name="content" rows="10" required></textarea>
+
+    <button type="submit">Publish</button>
+  </form>
+</div>
+</body>
+</html>

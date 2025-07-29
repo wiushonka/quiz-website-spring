@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Challenges</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f6f8;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .challenge {
+            background-color: #e0f7fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .challenge:hover {
+            background-color: #b2ebf2;
+        }
+        .challenge strong {
+            display: inline-block;
+            min-width: 120px;
+        }
+        .buttons {
+            margin-top: 10px;
+        }
+        .buttons button {
+            margin-right: 10px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .accept {
+            background-color: #4caf50;
+            color: white;
+        }
+        .reject {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>All Challenges</h1>
+
+<div th:if="${#lists.isEmpty(allChallenges)}">
+    <p>No challenges available.</p>
+</div>
+
+<div th:each="chal : ${allChallenges}" class="challenge">
+    <p><strong>Quiz:</strong> <span th:text="${chal.quiz.description}">Quiz Title</span></p>
+    <p><strong>Sender:</strong> <span th:text="${chal.sender.username}">Sender Username</span></p>
+    <p><strong>Receiver:</strong> <span th:text="${chal.receiver.username}">Receiver Username</span></p>
+    <p><strong>Sender High Score:</strong>
+        <span th:text="${chal.senderHS != null ? chal.senderHS.points + ' pts' : 'N/A'}">High Score</span>
+    </p>
+
+    <div class="buttons">
+        <!-- Accept form -->
+        <form th:action="@{/challenge/accept}" method="post" style="display:inline;">
+            <input type="hidden" name="chalId" th:value="${chal.id}">
+            <button type="submit" class="accept">Accept</button>
+        </form>
+
+        <!-- Reject form -->
+        <form th:action="@{/challenge/reject}" method="post" style="display:inline;">
+            <input type="hidden" name="chalId" th:value="${chal.id}">
+            <button type="submit" class="reject">Reject</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

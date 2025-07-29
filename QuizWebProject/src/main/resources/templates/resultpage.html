@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Result</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .result-container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin: 15px 0;
+    }
+
+    strong {
+      color: #444;
+    }
+
+    span {
+      font-weight: bold;
+      color: #5b86e5;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 12px 20px;
+      background-color: #5b86e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4a6fb3;
+    }
+
+    .no-result {
+      font-size: 1.2em;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div th:if="${quizResult}" class="result-container">
+  <h1>Quiz Result</h1>
+  <p><strong>User:</strong> <span th:text="${quizResult.getUser().getUsername()}">Username</span></p>
+  <p><strong>Quiz:</strong> <span th:text="${quizResult.getQuiz().getDescription()}">Quiz Name</span></p>
+  <p><strong>Points:</strong> <span th:text="${quizResult.getPoints()}">0.0</span></p>
+  <p><strong>Time Taken:</strong> <span th:text="${quizResult.getTime()}">0</span> seconds</p>
+
+  <a th:href="@{/homepage}">
+    <button type="button">Return to Homepage</button>
+  </a>
+</div>
+
+<div th:if="${quizResult == null}" class="no-result">
+  <p>No result to display.</p>
+</div>
+
+</body>
+</html>

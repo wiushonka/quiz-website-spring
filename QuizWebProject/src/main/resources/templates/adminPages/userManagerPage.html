@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Manager</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #36d1dc, #5b86e5);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .admin-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #5b86e5;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .admin-button:hover {
+            background-color: #4a6fb3;
+        }
+
+        table {
+            width: 100%;
+            background-color: white;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            background-color: #5b86e5;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4a6fb3;
+        }
+    </style>
+
+    <script>
+        function filterUsers() {
+            var input = document.getElementById('userFilter');
+            var filter = input.value.toLowerCase();
+            var rows = document.querySelectorAll('#userTable tbody tr');
+            rows.forEach(function(row) {
+                var username = row.querySelector('.username').textContent.toLowerCase();
+                if (username.indexOf(filter) > -1) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<a th:href="@{/admin}" class="admin-button">← Back to Admin Page</a>
+
+<h1>Manage Users</h1>
+
+<label>Search by Username:</label>
+<input type="text" id="userFilter" onkeyup="filterUsers()" placeholder="Enter username..." />
+<br><br>
+
+<table id="userTable" border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td class="username" th:text="${user.username}"></td>
+        <td>
+            <form th:action="@{'/admin/removeUser'}" method="post" style="display:inline;">
+                <input type="hidden" name="userId" th:value="${user.id}" />
+                <button type="submit">Remove</button>
+            </form>
+            <form th:action="@{'/admin/promotion'}" method="post" style="display:inline;">
+                <input type="hidden" name="userId" th:value="${user.id}" />
+                <button type="submit">Promote</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

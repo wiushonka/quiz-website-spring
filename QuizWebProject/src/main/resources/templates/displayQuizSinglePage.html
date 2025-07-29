@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title th:text="'Quiz: ' + ${quiz.description}">Quiz Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    h2 {
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 1.5rem;
+    }
+
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    .message {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Quiz Header -->
+<div th:replace="~{fragments :: quizHeader(
+    ${quiz.description},
+    ${quiz.type},
+    ${quiz.author != null ? quiz.author.username : 'Unknown'}
+)}"></div>
+
+<h2>Questions</h2>
+
+<!-- Quiz Questions -->
+<div th:if="${quiz != null and !#lists.isEmpty(quiz.questions)}">
+  <form th:action="@{/quiz/{id}/calculateResult(id=${quiz.id})}" method="post">
+    <ul>
+      <li th:each="question : ${quiz.questions}">
+        <div th:replace="~{fragments :: questionOptions(${question})}"></div>
+      </li>
+    </ul>
+    <input type="submit" value="Submit">
+  </form>
+</div>
+
+<!-- No Questions Fallback -->
+<div th:if="${quiz == null or #lists.isEmpty(quiz.questions)}" class="message">
+  <p>No questions found in this quiz.</p>
+</div>
+
+</body>
+</html>
